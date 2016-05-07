@@ -3,7 +3,7 @@
 ***	 Author: Tyler Barrus
 ***	 email:  barrust@gmail.com
 ***
-***	 Version: 0.1.0
+***	 Version: 0.1.1
 ***
 ***	 License: MIT 2016
 ***
@@ -25,7 +25,9 @@ static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index
 static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t index);
 static void __free_index(SimpleSet *set, uint64_t index);
 
-/* FUNCTION DEFINITIONS */
+/*******************************************************************************
+***		FUNCTIONS DEFINITIONS
+*******************************************************************************/
 
 int set_init(SimpleSet *set) {
     return set_init_alt(set, NULL);
@@ -33,7 +35,9 @@ int set_init(SimpleSet *set) {
 
 int set_init_alt(SimpleSet *set, HashFunction hash) {
     set->nodes = (simple_set_node**) malloc(INITIAL_NUM_ELEMENTS * sizeof(simple_set_node*));
-    // should add check to make sure it is not NULL
+    if (set->nodes == NULL) {
+        return SET_MALLOC_ERROR;
+    }
     set->number_nodes = INITIAL_NUM_ELEMENTS;
     uint64_t i;
     for (i = 0; i < set->number_nodes; i++) {
@@ -41,7 +45,7 @@ int set_init_alt(SimpleSet *set, HashFunction hash) {
     }
     set->used_nodes = 0;
     set->hash_function = (hash == NULL) ? &__default_hash : hash;
-    return 0;
+    return SET_TRUE;
 }
 
 int set_destroy(SimpleSet *set) {
@@ -59,14 +63,14 @@ int set_destroy(SimpleSet *set) {
 
 int set_add(SimpleSet *set, char *key) {
     if (set_contains(set, key) == 0) {
-        return 1; // this is already present in the set
+        return SET_ALREADY_PRESENT;
     }
     // Expand nodes if we are close to our desired fullness
     if ((set->used_nodes * 1.0) / set->number_nodes > MAX_FULLNESS_PERCENT) {
         uint64_t num_els = set->number_nodes * 2; // we want to double each time
         simple_set_node** tmp = realloc(set->nodes, num_els * sizeof(simple_set_node*));
         if (set->nodes == NULL) { // malloc failure
-            return -2;
+            return SET_MALLOC_ERROR;
         }
         set->nodes = tmp;
 		uint64_t orig_num_els = set->number_nodes;
@@ -90,10 +94,10 @@ int set_add(SimpleSet *set, char *key) {
     }
     uint64_t index, hash = set->hash_function(key);
     int res = __get_index(set, key, hash, &index);
-    if (res == -1) { // this is the first open slot
+    if (res == SET_FALSE) { // this is the first open slot
         __assign_node(set, key, hash, index);
         set->used_nodes++;
-        return 0;
+        return SET_TRUE;
     } else {
         return res;
     }
@@ -104,7 +108,29 @@ int set_contains(SimpleSet *set, char *key) {
     return __get_index(set, key, hash, &index);
 }
 
-
+int set_remove(SimpleSet *set, char *key) {
+    uint64_t i, index, hash = set->hash_function(key);
+    int pos = __get_index(set, key, hash, &index);
+    if (pos != SET_TRUE) {
+        return pos;
+    }
+    // remove this node
+    __free_index(set, index);
+    // re-layout all nodes after this node
+    for (i = index + 1; i < set->number_nodes; i++) {
+        if(set->nodes[i] != NULL) {
+            uint64_t index;
+            __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
+            if (i != index) { // we are moving this node
+                __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
+                __free_index(set, i);
+            }
+        } else { // we only need to do this until we run into a NULL
+            break;
+        }
+    }
+    return SET_TRUE;
+}
 
 /*******************************************************************************
 ***		PRIVATE FUNCTIONS
@@ -131,17 +157,17 @@ static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index
     while (true) {
         if (set->nodes[i] == NULL) {
             *index = i;
-            return -1; // not here
+            return SET_FALSE; // not here OR first open slot
         } else if (hash == set->nodes[i]->_hash && strlen(key) == strlen(set->nodes[i]->_key) && strncmp(key, set->nodes[i]->_key, strlen(key)) == 0) {
             *index = i;
-            return 0;
+            return SET_TRUE;
         } else {
             i++;
             if (i > set->number_nodes) {
                 i = 0;
             }
             if (i == idx) { // this means we went all the way around and the set is full
-                return -2;
+                return SET_CIRCULAR_ERROR;
             }
         }
     }
@@ -152,7 +178,7 @@ static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t inde
     set->nodes[index]->_key = calloc(strlen(key) + 1, sizeof(char));
     strncpy(set->nodes[index]->_key, key, strlen(key));
     set->nodes[index]->_hash = hash;
-    return 0;
+    return SET_TRUE;
 }
 
 static void __free_index(SimpleSet *set, uint64_t index) {
