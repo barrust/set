@@ -25,6 +25,7 @@ static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index
 static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t index);
 static void __free_index(SimpleSet *set, uint64_t index);
 static int __set_contains(SimpleSet *set, char *key, uint64_t hash);
+static int __set_add(SimpleSet *set, char *key, uint64_t hash);
 
 /*******************************************************************************
 ***		FUNCTIONS DEFINITIONS
@@ -63,45 +64,8 @@ int set_destroy(SimpleSet *set) {
 }
 
 int set_add(SimpleSet *set, char *key) {
-    uint64_t index, hash = set->hash_function(key);
-    if (__set_contains(set, key, hash) == SET_TRUE) {
-        return SET_ALREADY_PRESENT;
-    }
-    // Expand nodes if we are close to our desired fullness
-    if ((set->used_nodes * 1.0) / set->number_nodes > MAX_FULLNESS_PERCENT) {
-        uint64_t num_els = set->number_nodes * 2; // we want to double each time
-        simple_set_node** tmp = realloc(set->nodes, num_els * sizeof(simple_set_node*));
-        if (set->nodes == NULL) { // malloc failure
-            return SET_MALLOC_ERROR;
-        }
-        set->nodes = tmp;
-		uint64_t orig_num_els = set->number_nodes;
-        uint64_t i;
-        for (i = orig_num_els; i < num_els; i++) {
-			set->nodes[i] = NULL;
-		}
-		set->number_nodes = num_els;
-        // re-layout all nodes
-    	for (i = 0; i < set->number_nodes; i++) {
-    		if(set->nodes[i] != NULL) {
-                __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
-                if (i != index) { // we are moving this node
-                    __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
-                    __free_index(set, i);
-                }
-
-    		}
-    	}
-    }
-    // add element in
-    int res = __get_index(set, key, hash, &index);
-    if (res == SET_FALSE) { // this is the first open slot
-        __assign_node(set, key, hash, index);
-        set->used_nodes++;
-        return SET_TRUE;
-    } else {
-        return res;
-    }
+    uint64_t hash = set->hash_function(key);
+    return __set_add(set, key, hash);
 }
 
 int set_contains(SimpleSet *set, char *key) {
@@ -140,12 +104,12 @@ int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     uint64_t i;
     for (i = 0; i < s1->number_nodes; i++) {
         if (s1->nodes[i] != NULL) {
-            set_add(res, s1->nodes[i]->_key);
+            __set_add(res, s1->nodes[i]->_key, s1->nodes[i]->_hash);
         }
     }
     for (i = 0; i < s2->number_nodes; i++) {
         if (s2->nodes[i] != NULL) {
-            set_add(res, s2->nodes[i]->_key);
+            __set_add(res, s2->nodes[i]->_key, s2->nodes[i]->_hash);
         }
     }
     return SET_TRUE;
@@ -160,7 +124,7 @@ int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     for (i = 0; i < s1->number_nodes; i++) {
         if (s1->nodes[i] != NULL) {
             if (__set_contains(s2, s1->nodes[i]->_key, s1->nodes[i]->_hash) == SET_TRUE) {
-                set_add(res, s1->nodes[i]->_key);
+                __set_add(res, s1->nodes[i]->_key, s1->nodes[i]->_hash);
             }
         }
     }
@@ -202,6 +166,48 @@ static uint64_t __default_hash(char *key) {
 static int __set_contains(SimpleSet *set, char *key, uint64_t hash) {
     uint64_t index;
     return __get_index(set, key, hash, &index);
+}
+
+static int __set_add(SimpleSet *set, char *key, uint64_t hash) {
+    uint64_t index;
+    if (__set_contains(set, key, hash) == SET_TRUE) {
+        return SET_ALREADY_PRESENT;
+    }
+    // Expand nodes if we are close to our desired fullness
+    if ((set->used_nodes * 1.0) / set->number_nodes > MAX_FULLNESS_PERCENT) {
+        uint64_t num_els = set->number_nodes * 2; // we want to double each time
+        simple_set_node** tmp = realloc(set->nodes, num_els * sizeof(simple_set_node*));
+        if (set->nodes == NULL) { // malloc failure
+            return SET_MALLOC_ERROR;
+        }
+        set->nodes = tmp;
+		uint64_t orig_num_els = set->number_nodes;
+        uint64_t i;
+        for (i = orig_num_els; i < num_els; i++) {
+			set->nodes[i] = NULL;
+		}
+		set->number_nodes = num_els;
+        // re-layout all nodes
+    	for (i = 0; i < set->number_nodes; i++) {
+    		if(set->nodes[i] != NULL) {
+                __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
+                if (i != index) { // we are moving this node
+                    __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
+                    __free_index(set, i);
+                }
+
+    		}
+    	}
+    }
+    // add element in
+    int res = __get_index(set, key, hash, &index);
+    if (res == SET_FALSE) { // this is the first open slot
+        __assign_node(set, key, hash, index);
+        set->used_nodes++;
+        return SET_TRUE;
+    } else {
+        return res;
+    }
 }
 
 static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index) {
