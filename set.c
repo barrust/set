@@ -3,7 +3,7 @@
 ***	 Author: Tyler Barrus
 ***	 email:  barrust@gmail.com
 ***
-***	 Version: 0.1.2
+***	 Version: 0.1.3
 ***
 ***	 License: MIT 2016
 ***
@@ -109,17 +109,16 @@ int set_contains(SimpleSet *set, char *key) {
 }
 
 int set_remove(SimpleSet *set, char *key) {
-    uint64_t i, index, hash = set->hash_function(key);
-    int pos = __get_index(set, key, hash, &index);
+    uint64_t i, index, idx, hash = set->hash_function(key);
+    int pos = __get_index(set, key, hash, &idx);
     if (pos != SET_TRUE) {
         return pos;
     }
     // remove this node
-    __free_index(set, index);
+    __free_index(set, idx);
     // re-layout all nodes after this node
-    for (i = index + 1; i < set->number_nodes; i++) {
+    for (i = idx; i < set->number_nodes; i++) {
         if(set->nodes[i] != NULL) {
-            uint64_t index;
             __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
             if (i != index) { // we are moving this node
                 __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
@@ -146,6 +145,22 @@ int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     for (i = 0; i < s2->number_nodes; i++) {
         if (s2->nodes[i] != NULL) {
             set_add(res, s2->nodes[i]->_key);
+        }
+    }
+    return SET_TRUE;
+}
+
+int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
+    if (res->used_nodes != 0) {
+        return SET_OCCUPIED_ERROR;
+    }
+    // loop over both one of s1 and s2: get keys, check the other, and insert them into res if it is
+    uint64_t i;
+    for (i = 0; i < s1->number_nodes; i++) {
+        if (s1->nodes[i] != NULL) {
+            if (set_contains(s2, s1->nodes[i]->_key) == 0) {
+                set_add(res, s1->nodes[i]->_key);
+            }
         }
     }
     return SET_TRUE;
