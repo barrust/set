@@ -45,6 +45,8 @@ int set_contains(SimpleSet *set, char *key);
 int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
 int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
 int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);   /* TODO: implement */
+int set_is_subset(SimpleSet *test, SimpleSet *against);
+int set_is_superset(SimpleSet *test, SimpleSet *against);
 //char** set_to_array(SimpleSet *set);                              /* TODO: implement */
 
 #define SET_TRUE 0

@@ -24,6 +24,7 @@ static uint64_t __default_hash(char *key);
 static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index);
 static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t index);
 static void __free_index(SimpleSet *set, uint64_t index);
+static int __set_contains(SimpleSet *set, char *key, uint64_t hash);
 
 /*******************************************************************************
 ***		FUNCTIONS DEFINITIONS
@@ -62,7 +63,8 @@ int set_destroy(SimpleSet *set) {
 }
 
 int set_add(SimpleSet *set, char *key) {
-    if (set_contains(set, key) == 0) {
+    uint64_t index, hash = set->hash_function(key);
+    if (__set_contains(set, key, hash) == SET_TRUE) {
         return SET_ALREADY_PRESENT;
     }
     // Expand nodes if we are close to our desired fullness
@@ -82,7 +84,6 @@ int set_add(SimpleSet *set, char *key) {
         // re-layout all nodes
     	for (i = 0; i < set->number_nodes; i++) {
     		if(set->nodes[i] != NULL) {
-    			uint64_t index;
                 __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
                 if (i != index) { // we are moving this node
                     __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
@@ -92,7 +93,7 @@ int set_add(SimpleSet *set, char *key) {
     		}
     	}
     }
-    uint64_t index, hash = set->hash_function(key);
+    // add element in
     int res = __get_index(set, key, hash, &index);
     if (res == SET_FALSE) { // this is the first open slot
         __assign_node(set, key, hash, index);
@@ -158,7 +159,7 @@ int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     uint64_t i;
     for (i = 0; i < s1->number_nodes; i++) {
         if (s1->nodes[i] != NULL) {
-            if (set_contains(s2, s1->nodes[i]->_key) == 0) {
+            if (__set_contains(s2, s1->nodes[i]->_key, s1->nodes[i]->_hash) == SET_TRUE) {
                 set_add(res, s1->nodes[i]->_key);
             }
         }
@@ -166,6 +167,21 @@ int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     return SET_TRUE;
 }
 
+int set_is_subset(SimpleSet *test, SimpleSet *against) {
+    uint64_t i;
+    for (i = 0; i < test->number_nodes; i++) {
+        if (test->nodes[i] != NULL) {
+            if (__set_contains(against, test->nodes[i]->_key, test->nodes[i]->_hash) == SET_FALSE) {
+                return SET_FALSE;
+            }
+        }
+    }
+    return SET_TRUE;
+}
+
+int set_is_superset(SimpleSet *test, SimpleSet *against) {
+    return set_is_subset(against, test);
+}
 /*******************************************************************************
 ***		PRIVATE FUNCTIONS
 *******************************************************************************/
@@ -181,6 +197,11 @@ static uint64_t __default_hash(char *key) {
 	}
 	free(p);
 	return h;
+}
+
+static int __set_contains(SimpleSet *set, char *key, uint64_t hash) {
+    uint64_t index;
+    return __get_index(set, key, hash, &index);
 }
 
 static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index) {
