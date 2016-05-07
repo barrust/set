@@ -3,7 +3,7 @@
 ***	 Author: Tyler Barrus
 ***	 email:  barrust@gmail.com
 ***
-***	 Version: 0.1.1
+***	 Version: 0.1.2
 ***	 Purpose: Simple, yet effective, set implementation
 ***
 ***	 License: MIT 2016
@@ -42,7 +42,7 @@ int set_destroy(SimpleSet *set);
 int set_add(SimpleSet *set, char *key);
 int set_remove(SimpleSet *set, char *key);
 int set_contains(SimpleSet *set, char *key);
-int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);        /* TODO: implement */
+int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
 int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2); /* TODO: implement */
 int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);   /* TODO: implement */
 //char** set_to_array(SimpleSet *set);                              /* TODO: implement */
@@ -52,5 +52,6 @@ int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);   /* TODO: imp
 #define SET_FALSE -1
 #define SET_TRUE 0
 #define SET_ALREADY_PRESENT 1
+#define SET_OCCUPIED_ERROR -4
 
 #endif /* END SIMPLE SET HEADER */

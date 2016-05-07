@@ -1,4 +1,6 @@
 all: clean
-	gcc set.c set_test.c -o ./dist/set -g
+	gcc set.c ./tests/set_test.c -o ./dist/s -g
+	gcc set.c ./tests/set_union_test.c -o ./dist/su -g
 clean:
-	if [ -e ./dist/set ]; then rm ./dist/set; fi;
+	if [ -e ./dist/s ]; then rm ./dist/s; fi;
+	if [ -e ./dist/su ]; then rm ./dist/su; fi;

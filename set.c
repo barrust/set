@@ -3,7 +3,7 @@
 ***	 Author: Tyler Barrus
 ***	 email:  barrust@gmail.com
 ***
-***	 Version: 0.1.1
+***	 Version: 0.1.2
 ***
 ***	 License: MIT 2016
 ***
@@ -127,6 +127,25 @@ int set_remove(SimpleSet *set, char *key) {
             }
         } else { // we only need to do this until we run into a NULL
             break;
+        }
+    }
+    return SET_TRUE;
+}
+
+int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
+    if (res->used_nodes != 0) {
+        return SET_OCCUPIED_ERROR;
+    }
+    // loop over both s1 and s2 and get keys and insert them into res
+    uint64_t i;
+    for (i = 0; i < s1->number_nodes; i++) {
+        if (s1->nodes[i] != NULL) {
+            set_add(res, s1->nodes[i]->_key);
+        }
+    }
+    for (i = 0; i < s2->number_nodes; i++) {
+        if (s2->nodes[i] != NULL) {
+            set_add(res, s2->nodes[i]->_key);
         }
     }
     return SET_TRUE;
