@@ -82,15 +82,18 @@ int set_remove(SimpleSet *set, char *key) {
     // remove this node
     __free_index(set, idx);
     // re-layout all nodes after this node
-    for (i = idx; i < set->number_nodes; i++) {
-        if(set->nodes[i] != NULL) {
-            __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
-            if (i != index) { // we are moving this node
-                __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
-                __free_index(set, i);
+    int moved_one = 1;
+    while (moved_one != 0) {
+        moved_one = 0;
+        for (i = 0; i < set->number_nodes; i++) {
+            if(set->nodes[i] != NULL) {
+                __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
+                if (i != index) { // we are moving this node
+                    __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
+                    __free_index(set, i);
+                    moved_one++;
+                }
             }
-        } else { // we only need to do this until we run into a NULL
-            break;
         }
     }
     return SET_TRUE;
@@ -128,6 +131,25 @@ int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
             }
         }
     }
+    return SET_TRUE;
+}
+
+/* difference is s1 - s2 */
+int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
+    if (res->used_nodes != 0) {
+        return SET_OCCUPIED_ERROR;
+    }
+    // loop over s1 and keep only things not in s2
+    uint64_t i, j=0;
+    for (i = 0; i < s1->number_nodes; i++) {
+        if (s1->nodes[i] != NULL) {
+            if (__set_contains(s2, s1->nodes[i]->_key, s1->nodes[i]->_hash) != SET_TRUE) {
+                __set_add(res, s1->nodes[i]->_key, s1->nodes[i]->_hash);
+                j++;
+            }
+        }
+    }
+    //printf("elements added: %" PRIu64 "\n", j);
     return SET_TRUE;
 }
 
@@ -188,16 +210,22 @@ static int __set_add(SimpleSet *set, char *key, uint64_t hash) {
 		}
 		set->number_nodes = num_els;
         // re-layout all nodes
-    	for (i = 0; i < set->number_nodes; i++) {
-    		if(set->nodes[i] != NULL) {
-                __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
-                if (i != index) { // we are moving this node
-                    __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
-                    __free_index(set, i);
-                }
+        int moved_one = 1;
+        while (moved_one != 0) {
+            moved_one = 0;
+            for (i = 0; i < set->number_nodes; i++) {
+        		if(set->nodes[i] != NULL) {
+                    __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
+                    if (i != index) { // we are moving this node
+                        __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
+                        __free_index(set, i);
+                        moved_one++;
+                    }
 
-    		}
-    	}
+        		}
+        	}
+        }
+
     }
     // add element in
     int res = __get_index(set, key, hash, &index);
@@ -223,10 +251,7 @@ static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index
             *index = i;
             return SET_TRUE;
         } else {
-            i++;
-            if (i > set->number_nodes) {
-                i = 0;
-            }
+            i = (i + 1 == set->number_nodes) ? 0 : i + 1;
             if (i == idx) { // this means we went all the way around and the set is full
                 return SET_CIRCULAR_ERROR;
             }
