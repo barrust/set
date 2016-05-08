@@ -26,6 +26,7 @@ static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t inde
 static void __free_index(SimpleSet *set, uint64_t index);
 static int __set_contains(SimpleSet *set, char *key, uint64_t hash);
 static int __set_add(SimpleSet *set, char *key, uint64_t hash);
+static int __relayout_nodes(SimpleSet *set);
 
 /*******************************************************************************
 ***		FUNCTIONS DEFINITIONS
@@ -74,28 +75,15 @@ int set_contains(SimpleSet *set, char *key) {
 }
 
 int set_remove(SimpleSet *set, char *key) {
-    uint64_t i, index, idx, hash = set->hash_function(key);
-    int pos = __get_index(set, key, hash, &idx);
+    uint64_t i, index, hash = set->hash_function(key);
+    int pos = __get_index(set, key, hash, &index);
     if (pos != SET_TRUE) {
         return pos;
     }
     // remove this node
-    __free_index(set, idx);
+    __free_index(set, index);
     // re-layout all nodes after this node
-    int moved_one = 1;
-    while (moved_one != 0) {
-        moved_one = 0;
-        for (i = 0; i < set->number_nodes; i++) {
-            if(set->nodes[i] != NULL) {
-                __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
-                if (i != index) { // we are moving this node
-                    __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
-                    __free_index(set, i);
-                    moved_one++;
-                }
-            }
-        }
-    }
+    int itters = __relayout_nodes(set);
     return SET_TRUE;
 }
 
@@ -140,16 +128,14 @@ int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
         return SET_OCCUPIED_ERROR;
     }
     // loop over s1 and keep only things not in s2
-    uint64_t i, j=0;
+    uint64_t i;
     for (i = 0; i < s1->number_nodes; i++) {
         if (s1->nodes[i] != NULL) {
             if (__set_contains(s2, s1->nodes[i]->_key, s1->nodes[i]->_hash) != SET_TRUE) {
                 __set_add(res, s1->nodes[i]->_key, s1->nodes[i]->_hash);
-                j++;
             }
         }
     }
-    //printf("elements added: %" PRIu64 "\n", j);
     return SET_TRUE;
 }
 
@@ -210,22 +196,7 @@ static int __set_add(SimpleSet *set, char *key, uint64_t hash) {
 		}
 		set->number_nodes = num_els;
         // re-layout all nodes
-        int moved_one = 1;
-        while (moved_one != 0) {
-            moved_one = 0;
-            for (i = 0; i < set->number_nodes; i++) {
-        		if(set->nodes[i] != NULL) {
-                    __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
-                    if (i != index) { // we are moving this node
-                        __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
-                        __free_index(set, i);
-                        moved_one++;
-                    }
-
-        		}
-        	}
-        }
-
+        int itters = __relayout_nodes(set);
     }
     // add element in
     int res = __get_index(set, key, hash, &index);
@@ -271,4 +242,24 @@ static void __free_index(SimpleSet *set, uint64_t index) {
     free(set->nodes[index]->_key);
     free(set->nodes[index]);
     set->nodes[index] = NULL;
+}
+
+static int __relayout_nodes(SimpleSet *set) {
+    uint64_t index, i;
+    int j, moved_one = 1;
+    while (moved_one != 0) {
+        j++;
+        moved_one = 0;
+        for (i = 0; i < set->number_nodes; i++) {
+            if(set->nodes[i] != NULL) {
+                __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
+                if (i != index) { // we are moving this node
+                    __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
+                    __free_index(set, i);
+                    moved_one++;
+                }
+            }
+        }
+    }
+    return j;
 }
