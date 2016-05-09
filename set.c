@@ -139,6 +139,30 @@ int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     return SET_TRUE;
 }
 
+int set_symmetric_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
+    if (res->used_nodes != 0) {
+        return SET_OCCUPIED_ERROR;
+    }
+    uint64_t i;
+    // loop over set 1 and add elements that are unique to set 1
+    for (i = 0; i < s1->number_nodes; i++) {
+        if (s1->nodes[i] != NULL) {
+            if (__set_contains(s2, s1->nodes[i]->_key, s1->nodes[i]->_hash) != SET_TRUE) {
+                __set_add(res, s1->nodes[i]->_key, s1->nodes[i]->_hash);
+            }
+        }
+    }
+    // loop over set 2 and add elements that are unique to set 2
+    for (i = 0; i < s2->number_nodes; i++) {
+        if (s2->nodes[i] != NULL) {
+            if (__set_contains(s1, s2->nodes[i]->_key, s2->nodes[i]->_hash) != SET_TRUE) {
+                __set_add(res, s2->nodes[i]->_key, s2->nodes[i]->_hash);
+            }
+        }
+    }
+    return SET_TRUE;
+}
+
 int set_is_subset(SimpleSet *test, SimpleSet *against) {
     uint64_t i;
     for (i = 0; i < test->number_nodes; i++) {
