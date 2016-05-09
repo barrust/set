@@ -185,12 +185,11 @@ static int __set_add(SimpleSet *set, char *key, uint64_t hash) {
     if ((set->used_nodes * 1.0) / set->number_nodes > MAX_FULLNESS_PERCENT) {
         uint64_t num_els = set->number_nodes * 2; // we want to double each time
         simple_set_node** tmp = realloc(set->nodes, num_els * sizeof(simple_set_node*));
-        if (set->nodes == NULL) { // malloc failure
+        if (tmp == NULL || set->nodes == NULL) { // malloc failure
             return SET_MALLOC_ERROR;
         }
         set->nodes = tmp;
-		uint64_t orig_num_els = set->number_nodes;
-        uint64_t i;
+		uint64_t i, orig_num_els = set->number_nodes;
         for (i = orig_num_els; i < num_els; i++) {
 			set->nodes[i] = NULL;
 		}
