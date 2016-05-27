@@ -20,7 +20,7 @@
 #ifndef __SIMPLE_SET_H__
 #define __SIMPLE_SET_H__
 
-#include <inttypes.h>       /* PRIu64 */
+#include <inttypes.h>       /* uint64_t */
 
 typedef uint64_t (*HashFunction) (char *key);
 
@@ -38,6 +38,7 @@ typedef struct  {
 
 int set_init(SimpleSet *set);
 int set_init_alt(SimpleSet *set, HashFunction hash);
+int set_clear(SimpleSet *set);
 int set_destroy(SimpleSet *set);
 int set_add(SimpleSet *set, char *key);
 int set_remove(SimpleSet *set, char *key);

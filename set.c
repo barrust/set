@@ -51,6 +51,24 @@ int set_init_alt(SimpleSet *set, HashFunction hash) {
     return SET_TRUE;
 }
 
+int set_clear(SimpleSet *set) {
+    uint64_t i;
+    for(i = 0; i < set->number_nodes; i++) {
+        if (set->nodes[i] != NULL) {
+            __free_index(set, i);
+        }
+    }
+    simple_set_node** tmp = realloc(set->nodes, INITIAL_NUM_ELEMENTS * sizeof(simple_set_node*));
+    if (tmp == NULL || set->nodes == NULL) { // malloc failure
+        return SET_MALLOC_ERROR;
+    } else {
+        set->nodes = tmp;
+    }
+    set->number_nodes = INITIAL_NUM_ELEMENTS;
+    set->used_nodes = 0;
+    return SET_TRUE;
+}
+
 int set_destroy(SimpleSet *set) {
     uint64_t i;
     for(i = 0; i < set->number_nodes; i++) {
@@ -82,8 +100,9 @@ int set_remove(SimpleSet *set, char *key) {
     }
     // remove this node
     __free_index(set, index);
-    // re-layout all nodes after this node
+    // re-layout nodes
     int itters = __relayout_nodes(set);
+    set->used_nodes--;
     return SET_TRUE;
 }
 

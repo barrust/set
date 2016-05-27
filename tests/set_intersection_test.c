@@ -37,6 +37,14 @@ int main(int argc, char **argv) {
     }
     printf("Number Missing Elements: %d\n", num_missing);
 
+    printf("Test clearing set...\n");
+    printf("Total Elements (pre): %" PRIu64 "\n", s1.used_nodes);
+    printf("Total Nodes (pre): %" PRIu64 "\n", s1.number_nodes);
+    set_clear(&s1);
+    printf("Total Elements (post): %" PRIu64 "\n", s1.used_nodes);
+    printf("Total Nodes (post): %" PRIu64 "\n", s1.number_nodes);
+
+
     printf("Cleaning up the sets\n");
     set_destroy(&s1);
     set_destroy(&s2);

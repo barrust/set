@@ -48,6 +48,12 @@ int main(int argc, char **argv) {
     }
     printf("Completed testing other elements in set\n");
 
+    printf("Test clearing set...\n");
+    printf("Total Elements (pre): %" PRIu64 "\n", set.used_nodes);
+    printf("Total Nodes (pre): %" PRIu64 "\n", set.number_nodes);
+    set_clear(&set);
+    printf("Total Elements (post): %" PRIu64 "\n", set.used_nodes);
+    printf("Total Nodes (post): %" PRIu64 "\n", set.number_nodes);
     set_destroy(&set);
 
 
