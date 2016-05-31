@@ -137,7 +137,24 @@ int main(int argc, char **argv) {
     assert(res == SET_TRUE);
 
     /*
-    Test subset functionality. A is a superset of B. B is a subset of A
+    Test strict subset functionality. A is a superset of B. B is a subset of A
+    */
+    printf("\n\n==== Test Set Strict Subset ====\n");
+    res = set_is_subset_strict(&A, &B);
+    printf("A ⊂ B: %s\n", res == 0 ? "yes" : "no");
+    assert(res == SET_FALSE);
+    res = set_is_subset_strict(&B, &A);
+    printf("B ⊂ A: %s\n", res == 0 ? "yes" : "no");
+    assert(res == SET_TRUE);
+    res = set_is_subset_strict(&A, &A);
+    printf("A ⊂ A: %s\n", res == 0 ? "yes" : "no");
+    assert(res == SET_FALSE);
+    res = set_is_subset_strict(&B, &B);
+    printf("B ⊂ B: %s\n", res == 0 ? "yes" : "no");
+    assert(res == SET_FALSE);
+
+    /*
+    Test superset functionality. A is a superset of B. B is a subset of A
     */
     printf("\n\n==== Test Set Superset ====\n");
     printf("Superset Definition: A set A is a superset of another set B if all elements of the set B are elements of the set A. The superset relationship is denoted as A ⊇ B.\n");
@@ -153,6 +170,23 @@ int main(int argc, char **argv) {
     res = set_is_superset(&B, &B);
     printf("B ⊇ B: %s\n", res == 0 ? "yes" : "no");
     assert(res == SET_TRUE);
+
+    /*
+    Test strict superset functionality. A is a superset of B. B is a subset of A
+    */
+    printf("\n\n==== Test Set Strict Superset ====\n");
+    res = set_is_superset_strict(&A, &B);
+    printf("A ⊃ B: %s\n", res == 0 ? "yes" : "no");
+    assert(res == SET_TRUE);
+    res = set_is_superset_strict(&B, &A);
+    printf("B ⊃ A: %s\n", res == 0 ? "yes" : "no");
+    assert(res == SET_FALSE);
+    res = set_is_superset_strict(&A, &A);
+    printf("A ⊃ A: %s\n", res  == 0 ? "yes" : "no");
+    assert(res == SET_FALSE);
+    res = set_is_superset_strict(&B, &B);
+    printf("B ⊃ B: %s\n", res == 0 ? "yes" : "no");
+    assert(res == SET_FALSE);
 
 
     //

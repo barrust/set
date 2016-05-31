@@ -49,8 +49,8 @@ int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
 int set_symmetric_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
 int set_is_subset(SimpleSet *test, SimpleSet *against);
 int set_is_superset(SimpleSet *test, SimpleSet *against);
-// int set_is_subset_strict(SimpleSet *test, SimpleSet *against);             /* TODO: implement */
-// int set_is_superset_strict(SimpleSet *test, SimpleSet *against);           /* TODO: implement */
+int set_is_subset_strict(SimpleSet *test, SimpleSet *against);
+int set_is_superset_strict(SimpleSet *test, SimpleSet *against);
 // int set_cmp(SimpleSet *test, SimpleSet, *against);                         /* TODO: implement */
 // char** set_to_array(SimpleSet *set);                                       /* TODO: implement */
 

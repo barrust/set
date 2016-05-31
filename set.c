@@ -194,8 +194,19 @@ int set_is_subset(SimpleSet *test, SimpleSet *against) {
     return SET_TRUE;
 }
 
+int set_is_subset_strict(SimpleSet *test, SimpleSet *against) {
+    if (test->used_nodes >= against->used_nodes) {
+        return SET_FALSE;
+    }
+    return set_is_subset(test, against);
+}
+
 int set_is_superset(SimpleSet *test, SimpleSet *against) {
     return set_is_subset(against, test);
+}
+
+int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
+    return set_is_subset_strict(against, test);
 }
 /*******************************************************************************
 ***		PRIVATE FUNCTIONS
