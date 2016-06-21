@@ -140,6 +140,7 @@ int main(int argc, char **argv) {
     Test strict subset functionality. A is a superset of B. B is a subset of A
     */
     printf("\n\n==== Test Set Strict Subset ====\n");
+    printf("Set A is a strict subset of another set B if all elements of the set A are elements of the set B. In other words, the set A is contained inside the set B. A ≠ B is required. The strict subset relationship is denoted as A ⊂ B.\n");
     res = set_is_subset_strict(&A, &B);
     printf("A ⊂ B: %s\n", res == 0 ? "yes" : "no");
     assert(res == SET_FALSE);
@@ -175,6 +176,7 @@ int main(int argc, char **argv) {
     Test strict superset functionality. A is a superset of B. B is a subset of A
     */
     printf("\n\n==== Test Set Strict Superset ====\n");
+    printf("Strict Superset Definition: A set A is a superset of another set B if all elements of the set B are elements of the set A. A ≠ B is required. The superset relationship is denoted as A ⊃ B.\n");
     res = set_is_superset_strict(&A, &B);
     printf("A ⊃ B: %s\n", res == 0 ? "yes" : "no");
     assert(res == SET_TRUE);
@@ -188,17 +190,73 @@ int main(int argc, char **argv) {
     printf("B ⊃ B: %s\n", res == 0 ? "yes" : "no");
     assert(res == SET_FALSE);
 
-
-    //
-    //
-    // printf("The intersection of a set A with a B is the set of elements that are in both set A and B. The intersection is denoted as A ∩ B.");
-    //
-    //
-    // printf("The union of a set AA with a BB is the set of elements that are in either set AA or BB. The union is denoted as A∪BA∪B.");
-
-    set_clear(&A);
+    /*
+    Test Set Intersection functionality.
+    */
+    printf("\n\n==== Test Set Intersection ====\n");
+    printf("The intersection of a set A with a B is the set of elements that are in both set A and B. The intersection is denoted as A ∩ B.");
     set_destroy(&A);
     set_destroy(&B);
+    set_init(&A);
+    set_init(&B);
+    set_init(&C);
+    assert(A.used_nodes == 0);
+    assert(B.used_nodes == 0);
+    assert(C.used_nodes == 0);
+
+    initialize_set(&A, 0, elements, 1, SET_TRUE);
+    initialize_set(&B, elements / 2, elements * 2, 1, SET_TRUE);
+    set_intersection(&C, &A, &B);
+
+    assert(C.used_nodes == (elements / 2));
+
+    inaccuraces = 0;
+    for (i = 0; i < elements / 2;  i++) {
+        char key[KEY_LEN] = {0};
+		sprintf(key, "%d", i);
+        if (set_contains(&C, key) == SET_TRUE) {
+            printf("Non-present key: [%s]\n", key);
+            inaccuraces++;
+        }
+    }
+    for (i = elements + 1; i < elements * 2;  i++) {
+        char key[KEY_LEN] = {0};
+		sprintf(key, "%d", i);
+        if (set_contains(&C, key) == SET_TRUE) {
+            printf("Non-present key: [%s]\n", key);
+            inaccuraces++;
+        }
+    }
+    assert(inaccuraces == 0);
+    printf("Non-present keys check: OK!\n");
+
+    inaccuraces = 0;
+    for (i = elements / 2; i < elements; i++) {
+        char key[KEY_LEN] = {0};
+		sprintf(key, "%d", i);
+        if (set_contains(&C, key) != SET_TRUE) {
+            printf("Missing Key: [%s]\n", key);
+            inaccuraces++;
+        }
+    }
+    assert(inaccuraces == 0);
+    printf("Missing keys check: OK!\n");
+
+
+    // set_union
+    // printf("\n\n==== Test Set Union ====\n");
+    // printf("The union of a set AA with a BB is the set of elements that are in either set AA or BB. The union is denoted as A∪BA∪B.");
+
+    // set_difference
+    // printf("\n\n==== Test Set Difference ====\n");
+
+    // set_symmetric_difference
+    // printf("\n\n==== Test Set Symmetric Difference ====\n");
+
+
+    set_destroy(&A);
+    set_destroy(&B);
+    set_destroy(&C);
 
     return 0;
 }
