@@ -244,7 +244,7 @@ int main(int argc, char **argv) {
 
 
     /*
-    Test Set Difference A ∖ B where C contains only those elements from A that are not in B.
+    Test Set Difference: A ∖ B where C contains only those elements from A that are not in B.
     */
     printf("\n\n==== Test Set Difference ====\n");
     printf("The set difference between two sets A and B is written A ∖ B, and means the set that consists of the elements of A which are not elements of B: x ∈ A ∖ B ⟺ x ∈ A ∧ x ∉ B. Another frequently seen notation for S ∖ T is S − T.");
@@ -278,18 +278,59 @@ int main(int argc, char **argv) {
     printf("Non-present keys check: OK!\n");
 
 
-    // set_symmetric_difference
-    // printf("\n\n==== Test Set Symmetric Difference ====\n");
-    // printf("The symmetric difference of two sets A and B is the set of elements either in A or in B but not in both. Symmetric difference is denoted A △ B or A * B.");
-    // set_destroy(&C);
-    // set_init(&C);
-    // set_symmetric_difference(&C, &A, &B);
+    /*
+    Test Symmetric Difference: C = A △ B is where C contains only elements in A not in B and elements from B that are not in A.
+    */
+    printf("\n\n==== Test Set Symmetric Difference ====\n");
+    printf("The symmetric difference of two sets A and B is the set of elements either in A or in B but not in both. Symmetric difference is denoted A △ B or A * B.");
+    set_destroy(&C);
+    set_init(&C);
+    set_symmetric_difference(&C, &A, &B);
+    printf("Completed the set_symmetric_difference\nNumber used elements: %" PRIu64 "\n", C.used_nodes);
+    printf("calculated number of elements: %d\n", ((elements * 2) - (elements / 2)));
+    assert(C.used_nodes == ((elements * 2) - (elements / 2)));
+
+    printf("Completed the set_symmetric_difference\n");
+    inaccuraces = 0;
+    for (i = 0; i < elements / 2; i++) {
+        char key[KEY_LEN] = {0};
+		sprintf(key, "%d", i);
+        if (set_contains(&C, key) != SET_TRUE) {
+            printf("Missing Key: [%s]\n", key);
+            inaccuraces++;
+        }
+    }
+    for (i = elements; i < elements * 2; i++) {
+        char key[KEY_LEN] = {0};
+		sprintf(key, "%d", i);
+        if (set_contains(&C, key) != SET_TRUE) {
+            printf("Missing Key: [%s]\n", key);
+            inaccuraces++;
+        }
+    }
+    assert(inaccuraces == 0);
+    printf("Missing keys check: OK!\n");
+
+    inaccuraces = 0;
+    for (i = elements / 2 + 1; i < elements;  i++) {
+        char key[KEY_LEN] = {0};
+		sprintf(key, "%d", i);
+        if (set_contains(&C, key) == SET_TRUE) {
+            printf("Non-present key: [%s]\n", key);
+            inaccuraces++;
+        }
+    }
+    assert(inaccuraces == 0);
+    printf("Non-present keys check: OK!\n");
 
 
-    // set_union
+    /*
+    Test Set Union: C = A ∪ B denotes that all elements from A and B are part of C
+    */
     // printf("\n\n==== Test Set Union ====\n");
     // printf("The union of a set A with a B is the set of elements that are in either set A or B. The union is denoted as A ∪ B.");
 
+    printf("\n\n==== Clean Up Memory ====\n");
     set_destroy(&A);
     set_destroy(&B);
     set_destroy(&C);
