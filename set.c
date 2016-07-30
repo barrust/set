@@ -26,7 +26,7 @@ static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t inde
 static void __free_index(SimpleSet *set, uint64_t index);
 static int __set_contains(SimpleSet *set, char *key, uint64_t hash);
 static int __set_add(SimpleSet *set, char *key, uint64_t hash);
-static int __relayout_nodes(SimpleSet *set);
+static void __relayout_nodes(SimpleSet *set);
 
 /*******************************************************************************
 ***		FUNCTIONS DEFINITIONS
@@ -80,6 +80,7 @@ int set_destroy(SimpleSet *set) {
     set->number_nodes = 0;
 	set->used_nodes = 0;
 	set->hash_function = NULL;
+    return SET_TRUE;
 }
 
 int set_add(SimpleSet *set, char *key) {
@@ -93,7 +94,7 @@ int set_contains(SimpleSet *set, char *key) {
 }
 
 int set_remove(SimpleSet *set, char *key) {
-    uint64_t i, index, hash = set->hash_function(key);
+    uint64_t index, hash = set->hash_function(key);
     int pos = __get_index(set, key, hash, &index);
     if (pos != SET_TRUE) {
         return pos;
@@ -101,7 +102,7 @@ int set_remove(SimpleSet *set, char *key) {
     // remove this node
     __free_index(set, index);
     // re-layout nodes
-    int itters = __relayout_nodes(set);
+    __relayout_nodes(set);
     set->used_nodes--;
     return SET_TRUE;
 }
@@ -249,7 +250,7 @@ static int __set_add(SimpleSet *set, char *key, uint64_t hash) {
 		}
 		set->number_nodes = num_els;
         // re-layout all nodes
-        int itters = __relayout_nodes(set);
+        __relayout_nodes(set);
     }
     // add element in
     int res = __get_index(set, key, hash, &index);
@@ -297,11 +298,10 @@ static void __free_index(SimpleSet *set, uint64_t index) {
     set->nodes[index] = NULL;
 }
 
-static int __relayout_nodes(SimpleSet *set) {
+static void __relayout_nodes(SimpleSet *set) {
     uint64_t index, i;
-    int j, moved_one = 1;
+    int moved_one = 1;
     while (moved_one != 0) {
-        j++;
         moved_one = 0;
         for (i = 0; i < set->number_nodes; i++) {
             if(set->nodes[i] != NULL) {
@@ -314,5 +314,4 @@ static int __relayout_nodes(SimpleSet *set) {
             }
         }
     }
-    return j;
 }

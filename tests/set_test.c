@@ -26,16 +26,16 @@ void initialize_set(SimpleSet *set, int start, int elements, int itter, int TEST
     }
 }
 
-int main(int argc, char **argv) {
-    int i, added_elements, res, inaccuraces = 0;
-    int elements = 50000;
+int main() {
+    int added_elements, res, inaccuraces = 0;
+    uint64_t i, elements = 50000;
     uint64_t ui;
 
     SimpleSet A, B, C;
     /*
     Initialize Set A to 1/2 the elements in A
     */
-    printf("==== Set A Initialization with %d Elements ====\n", elements);
+    printf("==== Set A Initialization with %" PRIu64 " Elements ====\n", elements);
     set_init(&A);
     initialize_set(&A, 0, elements, 1, SET_TRUE);
     assert(A.used_nodes == elements);
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     /*
     Initialize Set B to 1/2 the elements in A
     */
-    printf("==== Set B Initialization with %d Elements ====\n", elements / 2);
+    printf("==== Set B Initialization with %" PRIu64 " Elements ====\n", elements / 2);
     set_init(&B);
     initialize_set(&B, 0, elements / 2, 1, SET_TRUE);
     assert(B.used_nodes == elements / 2);
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 
     for (i = 0; i < elements; i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&A, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             inaccuraces++;
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     inaccuraces = 0;
     for (i = elements; i < elements * 2; i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i * -1);
+		sprintf(key, "%" PRIu64, i * -1);
         if (set_contains(&A, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             inaccuraces++;
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
     printf("\n\n==== Test Set Remove ====\n");
     for (i = elements / 2; i < elements; i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_remove(&A, key) != SET_TRUE) {
             inaccuraces++;
         }
@@ -213,7 +213,7 @@ int main(int argc, char **argv) {
     inaccuraces = 0;
     for (i = 0; i < elements / 2;  i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             inaccuraces++;
@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
     }
     for (i = elements + 1; i < elements * 2;  i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             inaccuraces++;
@@ -233,7 +233,7 @@ int main(int argc, char **argv) {
     inaccuraces = 0;
     for (i = elements / 2; i < elements; i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             inaccuraces++;
@@ -256,7 +256,7 @@ int main(int argc, char **argv) {
     inaccuraces = 0;
     for (i = 0; i < elements / 2; i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             inaccuraces++;
@@ -268,7 +268,7 @@ int main(int argc, char **argv) {
     inaccuraces = 0;
     for (i = elements + 1; i < elements * 2;  i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             inaccuraces++;
@@ -292,7 +292,7 @@ int main(int argc, char **argv) {
     inaccuraces = 0;
     for (i = 0; i < elements / 2; i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             inaccuraces++;
@@ -300,7 +300,7 @@ int main(int argc, char **argv) {
     }
     for (i = elements; i < elements * 2; i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             inaccuraces++;
@@ -312,7 +312,7 @@ int main(int argc, char **argv) {
     inaccuraces = 0;
     for (i = elements / 2 + 1; i < elements;  i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             inaccuraces++;
@@ -334,7 +334,7 @@ int main(int argc, char **argv) {
 
     for (i = elements; i < elements * 2; i++) {
         char key[KEY_LEN] = {0};
-		sprintf(key, "%d", i);
+		sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             inaccuraces++;
