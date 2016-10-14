@@ -3,18 +3,17 @@
 ***	 Author: Tyler Barrus
 ***	 email:  barrust@gmail.com
 ***
-***	 Version: 0.1.3
+***	 Version: 0.1.4
 ***
 ***	 License: MIT 2016
 ***
 *******************************************************************************/
 
-#include "set.h"
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>        /* boolean: true false */
+#include "set.h"
 
 #define INITIAL_NUM_ELEMENTS 1024
 #define MAX_FULLNESS_PERCENT 0.25       /* arbitrary */
@@ -214,16 +213,16 @@ int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
 *******************************************************************************/
 static uint64_t __default_hash(char *key) {
     // FNV-1a hash (http://www.isthe.com/chongo/tech/comp/fnv/)
-	int i, len = strlen(key);
-	char *p = calloc(len + 1, sizeof(char));
-	strncpy(p, key, len);
-	uint64_t h = 14695981039346656073ULL; // FNV_OFFSET 64 bit
-	for (i = 0; i < len; i++){
-		h = h ^ (unsigned char) p[i];
-		h = h * 1099511628211ULL; // FNV_PRIME 64 bit
-	}
-	free(p);
-	return h;
+    int i, len = strlen(key);
+    char *p = calloc(len + 1, sizeof(char));
+    strncpy(p, key, len);
+    uint64_t h = 14695981039346656073ULL; // FNV_OFFSET 64 bit
+    for (i = 0; i < len; i++){
+    	h = h ^ (unsigned char) p[i];
+    	h = h * 1099511628211ULL; // FNV_PRIME 64 bit
+    }
+    free(p);
+    return h;
 }
 
 static int __set_contains(SimpleSet *set, char *key, uint64_t hash) {
