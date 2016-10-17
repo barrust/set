@@ -1,11 +1,11 @@
 /*******************************************************************************
 ***
-***	 Author: Tyler Barrus
-***	 email:  barrust@gmail.com
+***     Author: Tyler Barrus
+***     email:  barrust@gmail.com
 ***
-***	 Version: 0.1.4
+***     Version: 0.1.4
 ***
-***	 License: MIT 2016
+***     License: MIT 2016
 ***
 *******************************************************************************/
 
@@ -28,7 +28,7 @@ static int __set_add(SimpleSet *set, char *key, uint64_t hash);
 static void __relayout_nodes(SimpleSet *set);
 
 /*******************************************************************************
-***		FUNCTIONS DEFINITIONS
+***        FUNCTIONS DEFINITIONS
 *******************************************************************************/
 
 int set_init(SimpleSet *set) {
@@ -77,8 +77,8 @@ int set_destroy(SimpleSet *set) {
     }
     free(set->nodes);
     set->number_nodes = 0;
-	set->used_nodes = 0;
-	set->hash_function = NULL;
+    set->used_nodes = 0;
+    set->hash_function = NULL;
     return SET_TRUE;
 }
 
@@ -208,8 +208,10 @@ int set_is_superset(SimpleSet *test, SimpleSet *against) {
 int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
     return set_is_subset_strict(against, test);
 }
+
+
 /*******************************************************************************
-***		PRIVATE FUNCTIONS
+***        PRIVATE FUNCTIONS
 *******************************************************************************/
 static uint64_t __default_hash(char *key) {
     // FNV-1a hash (http://www.isthe.com/chongo/tech/comp/fnv/)
@@ -218,8 +220,8 @@ static uint64_t __default_hash(char *key) {
     strncpy(p, key, len);
     uint64_t h = 14695981039346656073ULL; // FNV_OFFSET 64 bit
     for (i = 0; i < len; i++){
-    	h = h ^ (unsigned char) p[i];
-    	h = h * 1099511628211ULL; // FNV_PRIME 64 bit
+        h = h ^ (unsigned char) p[i];
+        h = h * 1099511628211ULL; // FNV_PRIME 64 bit
     }
     free(p);
     return h;
@@ -243,11 +245,11 @@ static int __set_add(SimpleSet *set, char *key, uint64_t hash) {
             return SET_MALLOC_ERROR;
         }
         set->nodes = tmp;
-		uint64_t i, orig_num_els = set->number_nodes;
+        uint64_t i, orig_num_els = set->number_nodes;
         for (i = orig_num_els; i < num_els; i++) {
-			set->nodes[i] = NULL;
-		}
-		set->number_nodes = num_els;
+            set->nodes[i] = NULL;
+        }
+        set->number_nodes = num_els;
         // re-layout all nodes
         __relayout_nodes(set);
     }
