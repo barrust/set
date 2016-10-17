@@ -1,19 +1,19 @@
 /*******************************************************************************
 ***
-***	 Author: Tyler Barrus
-***	 email:  barrust@gmail.com
+***     Author: Tyler Barrus
+***     email:  barrust@gmail.com
 ***
-***	 Version: 0.1.4
-***	 Purpose: Simple, yet effective, set implementation
+***     Version: 0.1.4
+***     Purpose: Simple, yet effective, set implementation
 ***
-***	 License: MIT 2016
+***     License: MIT 2016
 ***
-***	 URL: https://github.com/barrust/set
+***     URL: https://github.com/barrust/set
 ***
-***	 Usage:
+***     Usage:
 ***
 ***
-***	Required Compile Flags:
+***    Required Compile Flags:
 ***
 *******************************************************************************/
 
@@ -30,10 +30,10 @@ typedef struct  {
 } SimpleSetNode, simple_set_node;
 
 typedef struct  {
-	simple_set_node **nodes;
-	uint64_t number_nodes;
-	uint64_t used_nodes;
-	HashFunction hash_function;
+    simple_set_node **nodes;
+    uint64_t number_nodes;
+    uint64_t used_nodes;
+    HashFunction hash_function;
 } SimpleSet, simple_set;
 
 
@@ -162,6 +162,7 @@ int set_is_superset_strict(SimpleSet *test, SimpleSet *against);
 
 // int set_cmp(SimpleSet *test, SimpleSet, *against);                         /* TODO: implement */
 // char** set_to_array(SimpleSet *set);                                       /* TODO: implement */
+// void set_printf(SimpleSet *set);                                           /* TODO: implement */
 
 #define SET_TRUE 0
 #define SET_FALSE -1
