@@ -49,6 +49,13 @@ int main() {
     assert(B.used_nodes == elements / 2);
 
     /*
+    Test the length of the set
+    */
+    printf("==== Set B Length Test ====\n");
+    assert(set_length(&B) == elements / 2);
+    printf("Set length test: OK!\n");
+
+    /*
     Test that inserting the same element into the set does not increase the number of nodes.
     */
     printf("==== Test Double Insertion ===\n");
