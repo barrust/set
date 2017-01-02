@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.4
+***     Version: 0.1.5
 ***     Purpose: Simple, yet effective, set implementation
 ***
 ***     License: MIT 2016
@@ -75,6 +75,11 @@ int set_remove(SimpleSet *set, char *key);
     found, or SET_CIRCULAR_ERROR if set is full and not found
 */
 int set_contains(SimpleSet *set, char *key);
+
+/*
+    Return the number of elements in the set
+*/
+uint64_t set_length(SimpleSet *set);
 
 /*
     Set res to the union of s1 and s2

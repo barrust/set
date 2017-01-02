@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.4
+***     Version: 0.1.5
 ***
 ***     License: MIT 2016
 ***
@@ -103,6 +103,10 @@ int set_remove(SimpleSet *set, char *key) {
     __relayout_nodes(set);
     set->used_nodes--;
     return SET_TRUE;
+}
+
+uint64_t set_length(SimpleSet *set) {
+    return set->used_nodes;
 }
 
 int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {

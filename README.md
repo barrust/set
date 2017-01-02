@@ -3,17 +3,31 @@ Implementation of sets in C
 
 Sets allow for quick checks for inclusion and exclusion
 
-This implementation of sets provides a simple and generally quick method to get set functionality into a C program quickly. It was developed to provide a basis for testing and benchmarking performance along with providing a purposeful, low overhead library.
+This implementation provides a simple and generally quick method to get set functionality into a C program quickly. It was developed to provide a basis for testing and benchmarking performance along with providing a purposeful, low overhead library. Currently only supports strings.
 
-##License
+## License
 MIT 2016
 
-##Usage:
-```
+# Main Features
+
+* Union, intersection, difference, and semantic difference
+* Standard and Strict subset and superset checks
+* Simple method to change the hashing function if desired
+* Add, check, and remove elements in a the set
+
+## Future Enhancements
+* In place union - add to an already created Set
+* Convert set to an Array
+* Set Compare
+* Print statistics about the set
+
+
+## Usage:
+``` c
 #include "set.h"
 #include <stdio.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     SimpleSet set;
     set_init(&set);
     set_add(&set, "orange");
@@ -38,5 +52,5 @@ int main(int argc, char **argv) {
 }
 ```
 
-##Required Compile Flags:
+## Required Compile Flags:
    None
