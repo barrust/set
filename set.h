@@ -10,15 +10,10 @@
 ***
 ***     URL: https://github.com/barrust/set
 ***
-***     Usage:
-***
-***
-***    Required Compile Flags:
-***
 *******************************************************************************/
 
-#ifndef __SIMPLE_SET_H__
-#define __SIMPLE_SET_H__
+#ifndef BARRUST_SIMPLE_SET_H__
+#define BARRUST_SIMPLE_SET_H__
 
 #include <inttypes.h>       /* uint64_t */
 

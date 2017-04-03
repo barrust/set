@@ -1,4 +1,4 @@
-CFLAGS= -Wall -Wextra
+CFLAGS= -Wall -Wpedantic -Wextra
 
 all: clean
 	gcc set.c $(CFLAGS) ./tests/set_test.c -o ./dist/s
