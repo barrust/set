@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.5
+***     Version: 0.1.6
 ***     Purpose: Simple, yet effective, set implementation
 ***
 ***     License: MIT 2016

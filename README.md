@@ -20,6 +20,7 @@ MIT 2016
 * Convert set to an Array
 * Set Compare
 * Print statistics about the set
+* Make thread safe when compiled with **OpenMP**
 
 
 ## Usage:
