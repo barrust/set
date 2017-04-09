@@ -1,5 +1,5 @@
 
-#include "../set.h"
+#include "../src/set.h"
 
 #include <stdio.h>
 #include <assert.h>
