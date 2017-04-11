@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.5
+***     Version: 0.1.6
 ***
 ***     License: MIT 2016
 ***
@@ -24,7 +24,7 @@ static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t inde
 static void __free_index(SimpleSet *set, uint64_t index);
 static int __set_contains(SimpleSet *set, char *key, uint64_t hash);
 static int __set_add(SimpleSet *set, char *key, uint64_t hash);
-static void __relayout_nodes(SimpleSet *set);
+static void __relayout_nodes(SimpleSet *set, uint64_t start);
 
 /*******************************************************************************
 ***        FUNCTIONS DEFINITIONS
@@ -100,13 +100,29 @@ int set_remove(SimpleSet *set, char *key) {
     // remove this node
     __free_index(set, index);
     // re-layout nodes
-    __relayout_nodes(set);
+    __relayout_nodes(set, index);
     set->used_nodes--;
     return SET_TRUE;
 }
 
 uint64_t set_length(SimpleSet *set) {
     return set->used_nodes;
+}
+
+char** set_to_array(SimpleSet *set, uint64_t *size) {
+    *size = set->used_nodes;
+    char** results = malloc(set->used_nodes * sizeof(char*));
+    uint64_t i, j = 0;
+    size_t len;
+    for (i = 0; i < set->number_nodes; i++) {
+        if (set->nodes[i] != NULL) {
+            len = strlen(set->nodes[i]->_key);
+            results[j] = calloc(len + 1, sizeof(char));
+            strncpy(results[j], set->nodes[i]->_key, len);
+            j++;
+        }
+    }
+    return results;
 }
 
 int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
@@ -254,7 +270,7 @@ static int __set_add(SimpleSet *set, char *key, uint64_t hash) {
         }
         set->number_nodes = num_els;
         // re-layout all nodes
-        __relayout_nodes(set);
+        __relayout_nodes(set, 0);
     }
     // add element in
     int res = __get_index(set, key, hash, &index);
@@ -302,19 +318,16 @@ static void __free_index(SimpleSet *set, uint64_t index) {
     set->nodes[index] = NULL;
 }
 
-static void __relayout_nodes(SimpleSet *set) {
+static void __relayout_nodes(SimpleSet *set, uint64_t start) {
     uint64_t index, i;
     int moved_one = 1;
-    while (moved_one != 0) {
-        moved_one = 0;
-        for (i = 0; i < set->number_nodes; i++) {
-            if(set->nodes[i] != NULL) {
-                __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
-                if (i != index) { // we are moving this node
-                    __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
-                    __free_index(set, i);
-                    moved_one++;
-                }
+    for (i = start; i < set->number_nodes; i++) {
+        if(set->nodes[i] != NULL) {
+            __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
+            if (i != index) { // we are moving this node
+                __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
+                __free_index(set, i);
+                moved_one++;
             }
         }
     }
