@@ -16,8 +16,8 @@ MIT 2016
 * Add, check, and remove elements in a the set
 
 ## Future Enhancements
+
 * In place union - add to an already created Set
-* Convert set to an Array
 * Set Compare
 * Print statistics about the set
 * Make thread safe when compiled with **OpenMP**

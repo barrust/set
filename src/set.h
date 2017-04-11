@@ -128,8 +128,11 @@ int set_is_subset_strict(SimpleSet *test, SimpleSet *against);
     The superset relationship is denoted as A ⊃ B */
 int set_is_superset_strict(SimpleSet *test, SimpleSet *against);
 
+/*  Return an array of the elements in the set
+    NOTE: Up to the caller to free the memory */
+char** set_to_array(SimpleSet *set, uint64_t *size);
+
 // int set_cmp(SimpleSet *left, SimpleSet, *right);                           /* TODO: implement */
-// char** set_to_array(SimpleSet *set);                                       /* TODO: implement */
 // void set_printf(SimpleSet *set);                                           /* TODO: implement */
 
 #define SET_TRUE 0

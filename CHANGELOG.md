@@ -2,7 +2,8 @@
 
 ### Version 0.1.6
 * Restructured repository
-* 
+* Add set_to_array function to get keys from the set easily
+* Speed improvements when removing keys
 
 ### Version 0.1.5
 * First version including:
