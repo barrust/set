@@ -1,5 +1,8 @@
 ##Current Version
 
+### Version 0.1.7
+* Unique HashFunction type when using with related libraries
+
 ### Version 0.1.6
 * Restructured repository
 * Add set_to_array function to get keys from the set easily
