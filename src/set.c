@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.6
+***     Version: 0.1.7
 ***
 ***     License: MIT 2016
 ***
@@ -34,7 +34,7 @@ int set_init(SimpleSet *set) {
     return set_init_alt(set, NULL);
 }
 
-int set_init_alt(SimpleSet *set, HashFunction hash) {
+int set_init_alt(SimpleSet *set, SetHashFunction hash) {
     set->nodes = (simple_set_node**) malloc(INITIAL_NUM_ELEMENTS * sizeof(simple_set_node*));
     if (set->nodes == NULL) {
         return SET_MALLOC_ERROR;
