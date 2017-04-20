@@ -1,4 +1,5 @@
 
+#include "timing.h"
 #include "../src/set.h"
 
 #include <stdio.h>
@@ -28,6 +29,9 @@ void initialize_set(SimpleSet *set, int start, int elements, int itter, int TEST
 }
 
 int main() {
+    Timing t;
+	timing_start(&t);
+
     int added_elements, res, inaccuraces = 0;
     uint64_t i, elements = 50000;
     uint64_t ui;
@@ -365,5 +369,7 @@ int main() {
     set_destroy(&C);
     printf("\n\n==== Completed tests! ====\n");
 
+    timing_end(&t);
+    printf("Completed the Set tests in %f seconds!\n", timing_get_difference(t));
     return 0;
 }

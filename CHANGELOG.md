@@ -1,5 +1,10 @@
 ##Current Version
 
+### Version 0.1.8
+* Performance improvements
+    * Reduce calls to strlen
+    * strncpy replaced with memcpy since non-overlapping memory
+
 ### Version 0.1.7
 * Unique HashFunction type when using with related libraries
 

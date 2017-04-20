@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.7
+***     Version: 0.1.8
 ***
 ***     License: MIT 2016
 ***
@@ -34,7 +34,7 @@ int set_init(SimpleSet *set) {
     return set_init_alt(set, NULL);
 }
 
-int set_init_alt(SimpleSet *set, SetHashFunction hash) {
+int set_init_alt(SimpleSet *set, set_hash_function hash) {
     set->nodes = (simple_set_node**) malloc(INITIAL_NUM_ELEMENTS * sizeof(simple_set_node*));
     if (set->nodes == NULL) {
         return SET_MALLOC_ERROR;
@@ -118,7 +118,7 @@ char** set_to_array(SimpleSet *set, uint64_t *size) {
         if (set->nodes[i] != NULL) {
             len = strlen(set->nodes[i]->_key);
             results[j] = calloc(len + 1, sizeof(char));
-            strncpy(results[j], set->nodes[i]->_key, len);
+            memcpy(results[j], set->nodes[i]->_key, len);
             j++;
         }
     }
@@ -234,9 +234,9 @@ int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
 *******************************************************************************/
 static uint64_t __default_hash(char *key) {
     // FNV-1a hash (http://www.isthe.com/chongo/tech/comp/fnv/)
-    int i, len = strlen(key);
+    size_t i, len = strlen(key);
     char *p = calloc(len + 1, sizeof(char));
-    strncpy(p, key, len);
+    memcpy(p, key, len);
     uint64_t h = 14695981039346656073ULL; // FNV_OFFSET 64 bit
     for (i = 0; i < len; i++){
         h = h ^ (unsigned char) p[i];
@@ -287,16 +287,20 @@ static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index
     uint64_t i, idx;
     idx = hash % set->number_nodes;
     i = idx;
-
+    size_t len = strlen(key);
     while (1) {
         if (set->nodes[i] == NULL) {
             *index = i;
             return SET_FALSE; // not here OR first open slot
-        } else if (hash == set->nodes[i]->_hash && strlen(key) == strlen(set->nodes[i]->_key) && strncmp(key, set->nodes[i]->_key, strlen(key)) == 0) {
+        } else if (hash == set->nodes[i]->_hash && len == strlen(set->nodes[i]->_key) && strncmp(key, set->nodes[i]->_key, len) == 0) {
             *index = i;
             return SET_TRUE;
         } else {
-            i = (i + 1 == set->number_nodes) ? 0 : i + 1;
+            i++;
+            if (i == set->number_nodes) {
+                i = 0;
+            }
+
             if (i == idx) { // this means we went all the way around and the set is full
                 return SET_CIRCULAR_ERROR;
             }
@@ -305,9 +309,10 @@ static int __get_index(SimpleSet *set, char *key, uint64_t hash, uint64_t *index
 }
 
 static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t index) {
+    size_t len = strlen(key);
     set->nodes[index] = malloc(sizeof(simple_set_node));
-    set->nodes[index]->_key = calloc(strlen(key) + 1, sizeof(char));
-    strncpy(set->nodes[index]->_key, key, strlen(key));
+    set->nodes[index]->_key = calloc(len + 1, sizeof(char));
+    memcpy(set->nodes[index]->_key, key, len);
     set->nodes[index]->_hash = hash;
     return SET_TRUE;
 }
@@ -319,7 +324,7 @@ static void __free_index(SimpleSet *set, uint64_t index) {
 }
 
 static void __relayout_nodes(SimpleSet *set, uint64_t start) {
-    uint64_t index, i;
+    uint64_t index = 0, i;
     int moved_one = 1;
     for (i = start; i < set->number_nodes; i++) {
         if(set->nodes[i] != NULL) {

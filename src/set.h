@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.7
+***     Version: 0.1.8
 ***     Purpose: Simple, yet effective, set implementation
 ***
 ***     License: MIT 2016
@@ -17,7 +17,7 @@
 
 #include <inttypes.h>       /* uint64_t */
 
-typedef uint64_t (*SetHashFunction) (char *key);
+typedef uint64_t (*set_hash_function) (char *key);
 
 typedef struct  {
     char* _key;
@@ -28,7 +28,7 @@ typedef struct  {
     simple_set_node **nodes;
     uint64_t number_nodes;
     uint64_t used_nodes;
-    SetHashFunction hash_function;
+    set_hash_function hash_function;
 } SimpleSet, simple_set;
 
 
@@ -36,7 +36,7 @@ typedef struct  {
 int set_init(SimpleSet *set);
 
 /* Initialize the set with a different hash function */
-int set_init_alt(SimpleSet *set, SetHashFunction hash);
+int set_init_alt(SimpleSet *set, set_hash_function hash);
 
 /* Utility function to clear out the set */
 int set_clear(SimpleSet *set);
