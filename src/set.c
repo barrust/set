@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.8
+***     Version: 0.1.9
 ***
 ***     License: MIT 2016
 ***
@@ -25,6 +25,7 @@ static void __free_index(SimpleSet *set, uint64_t index);
 static int __set_contains(SimpleSet *set, char *key, uint64_t hash);
 static int __set_add(SimpleSet *set, char *key, uint64_t hash);
 static void __relayout_nodes(SimpleSet *set, uint64_t start);
+static void __set_clear(SimpleSet *set);
 
 /*******************************************************************************
 ***        FUNCTIONS DEFINITIONS
@@ -50,30 +51,12 @@ int set_init_alt(SimpleSet *set, set_hash_function hash) {
 }
 
 int set_clear(SimpleSet *set) {
-    uint64_t i;
-    for(i = 0; i < set->number_nodes; i++) {
-        if (set->nodes[i] != NULL) {
-            __free_index(set, i);
-        }
-    }
-    simple_set_node** tmp = realloc(set->nodes, INITIAL_NUM_ELEMENTS * sizeof(simple_set_node*));
-    if (tmp == NULL || set->nodes == NULL) { // malloc failure
-        return SET_MALLOC_ERROR;
-    } else {
-        set->nodes = tmp;
-    }
-    set->number_nodes = INITIAL_NUM_ELEMENTS;
-    set->used_nodes = 0;
+    __set_clear(set);
     return SET_TRUE;
 }
 
 int set_destroy(SimpleSet *set) {
-    uint64_t i;
-    for(i = 0; i < set->number_nodes; i++) {
-        if (set->nodes[i] != NULL) {
-            __free_index(set, i);
-        }
-    }
+    __set_clear(set);
     free(set->nodes);
     set->number_nodes = 0;
     set->used_nodes = 0;
@@ -228,6 +211,24 @@ int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
     return set_is_subset_strict(against, test);
 }
 
+int set_cmp(SimpleSet *left, SimpleSet *right) {
+    if (left->used_nodes < right->used_nodes) {
+        return -1;
+    } else if (right->used_nodes < left->used_nodes) {
+        return 1;
+    }
+    uint64_t i;
+    for (i = 0; i < left->number_nodes; i++) {
+        if (left->nodes[i] != NULL) {
+            if (set_contains(right, left->nodes[i]->_key) != SET_TRUE) {
+                return 2;
+            }
+        }
+    }
+
+    return 0;
+}
+
 
 /*******************************************************************************
 ***        PRIVATE FUNCTIONS
@@ -336,4 +337,14 @@ static void __relayout_nodes(SimpleSet *set, uint64_t start) {
             }
         }
     }
+}
+
+static void __set_clear(SimpleSet *set) {
+    uint64_t i;
+    for(i = 0; i < set->number_nodes; i++) {
+        if (set->nodes[i] != NULL) {
+            __free_index(set, i);
+        }
+    }
+    set->used_nodes = 0;
 }

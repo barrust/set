@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.8
+***     Version: 0.1.9
 ***     Purpose: Simple, yet effective, set implementation
 ***
 ***     License: MIT 2016
@@ -132,7 +132,13 @@ int set_is_superset_strict(SimpleSet *test, SimpleSet *against);
     NOTE: Up to the caller to free the memory */
 char** set_to_array(SimpleSet *set, uint64_t *size);
 
-// int set_cmp(SimpleSet *left, SimpleSet, *right);                           /* TODO: implement */
+/*  Returns based on number elements:
+    -1 if left is less than right
+    1 if right is less than left
+    0 if left is the same size as right and keys match
+    2 if size is the same but elements are different */
+int set_cmp(SimpleSet *left, SimpleSet *right);
+
 // void set_printf(SimpleSet *set);                                           /* TODO: implement */
 
 #define SET_TRUE 0

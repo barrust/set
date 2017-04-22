@@ -270,8 +270,7 @@ int main() {
         that are not in B. */
     printf("\n\n==== Test Set Difference ====\n");
     printf("The set difference between two sets A and B is written A ∖ B, and means the set that consists of the elements of A which are not elements of B: x ∈ A ∖ B ⟺ x ∈ A ∧ x ∉ B. Another frequently seen notation for S ∖ T is S − T.\n");
-    set_destroy(&C);
-    set_init(&C);
+    set_clear(&C);
     set_difference(&C, &A, &B);
     assert(C.used_nodes == (elements / 2));
 
@@ -304,8 +303,7 @@ int main() {
         in A not in B and elements from B that are not in A. */
     printf("\n\n==== Test Set Symmetric Difference ====\n");
     printf("The symmetric difference of two sets A and B is the set of elements either in A or in B but not in both. Symmetric difference is denoted A △ B or A * B.\n");
-    set_destroy(&C);
-    set_init(&C);
+    set_clear(&C);
     set_symmetric_difference(&C, &A, &B);
     assert(C.used_nodes == ((elements * 2) - (elements / 2)));
 
@@ -347,8 +345,7 @@ int main() {
         part of C */
     printf("\n\n==== Test Set Union ====\n");
     printf("The union of a set A with a B is the set of elements that are in either set A or B. The union is denoted as A ∪ B.\n");
-    set_destroy(&C);
-    set_init(&C);
+    set_clear(&C);
     set_union(&C, &A, &B);
     assert(C.used_nodes == elements * 2);
 
@@ -362,6 +359,29 @@ int main() {
     }
     assert(inaccuraces == 0);
     printf("Missing keys check: OK!\n");
+
+    set_clear(&A);
+    set_clear(&B);
+    initialize_set(&A, 0, elements, 1, SET_TRUE);
+    initialize_set(&B, 1, elements + 1, 1, SET_TRUE);
+
+    printf("\n\n==== Test Set Compare ====\n");
+    printf("Sets are different in size Left larger than Right: ");
+    res = set_cmp(&C, &A);
+    assert(res == 1);
+    printf("OK!\n");
+    printf("Sets are different in size Right larger than Left: ");
+    res = set_cmp(&A, &C);
+    assert(res == -1);
+    printf("OK!\n");
+    printf("Sets are exactly the same (keys and size): ");
+    res = set_cmp(&A, &A);
+    assert(res == 0);
+    printf("OK!\n");
+    printf("Sets are the same size but different keys: ");
+    res = set_cmp(&A, &B);
+    assert(res == 2);
+    printf("OK!\n");
 
     printf("\n\n==== Clean Up Memory ====\n");
     set_destroy(&A);
