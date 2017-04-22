@@ -1,5 +1,10 @@
 ##Current Version
 
+### Version 0.1.9
+* Speed up the node removal process
+* Set compare function
+* Set clear function
+
 ### Version 0.1.8
 * Performance improvements
     * Reduce calls to strlen

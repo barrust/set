@@ -18,9 +18,7 @@ MIT 2016
 ## Future Enhancements
 
 * In place union - add to an already created Set
-* Set Compare
 * Print statistics about the set
-* Make thread safe when compiled with **OpenMP**
 
 
 ## Usage:
@@ -50,6 +48,32 @@ int main(int argc, char** argv) {
     }
 
     set_destroy(&set);
+}
+```
+
+## Thread safety
+
+Due to the the overhead of enforcing thread safety, it is up to the user to
+ensure that each thread has controlled access to the set. For **OpenMP** code,
+the following should suffice.
+
+``` c
+#include "set.h"
+#include <omp.h>
+
+int main(int argc, char** argv) {
+    SimpleSet set;
+    set_init(&set);
+    int i;
+    #pragma parallel for private(i)
+    for (i = 0; i < 500000; i++) {
+        char key[KEY_LEN] = {0};
+        sprintf(key, "%d", i);
+        #pragma critical (set_lock)
+        {
+            set_add(&set, key);
+        }
+    }
 }
 ```
 

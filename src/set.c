@@ -24,7 +24,7 @@ static int __assign_node(SimpleSet *set, char *key, uint64_t hash, uint64_t inde
 static void __free_index(SimpleSet *set, uint64_t index);
 static int __set_contains(SimpleSet *set, char *key, uint64_t hash);
 static int __set_add(SimpleSet *set, char *key, uint64_t hash);
-static void __relayout_nodes(SimpleSet *set, uint64_t start);
+static void __relayout_nodes(SimpleSet *set, uint64_t start, short end_on_null);
 static void __set_clear(SimpleSet *set);
 
 /*******************************************************************************
@@ -83,7 +83,7 @@ int set_remove(SimpleSet *set, char *key) {
     // remove this node
     __free_index(set, index);
     // re-layout nodes
-    __relayout_nodes(set, index);
+    __relayout_nodes(set, index, 0);
     set->used_nodes--;
     return SET_TRUE;
 }
@@ -271,7 +271,7 @@ static int __set_add(SimpleSet *set, char *key, uint64_t hash) {
         }
         set->number_nodes = num_els;
         // re-layout all nodes
-        __relayout_nodes(set, 0);
+        __relayout_nodes(set, 0, 1);
     }
     // add element in
     int res = __get_index(set, key, hash, &index);
@@ -324,17 +324,17 @@ static void __free_index(SimpleSet *set, uint64_t index) {
     set->nodes[index] = NULL;
 }
 
-static void __relayout_nodes(SimpleSet *set, uint64_t start) {
+static void __relayout_nodes(SimpleSet *set, uint64_t start, short end_on_null) {
     uint64_t index = 0, i;
-    int moved_one = 1;
     for (i = start; i < set->number_nodes; i++) {
         if(set->nodes[i] != NULL) {
             __get_index(set, set->nodes[i]->_key, set->nodes[i]->_hash, &index);
             if (i != index) { // we are moving this node
                 __assign_node(set, set->nodes[i]->_key, set->nodes[i]->_hash, index);
                 __free_index(set, i);
-                moved_one++;
             }
+        } else if (end_on_null == 0 && i != start) {
+            break;
         }
     }
 }
