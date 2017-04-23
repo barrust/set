@@ -74,8 +74,13 @@ int main(int argc, char** argv) {
             set_add(&set, key);
         }
     }
+    set_destroy(&set);
 }
 ```
+
+All but `set_contains` needs to be guarded against race conditions as the set
+will grow as needed. Set comparison functions (union, intersect, etc.) should
+be done on non-changing sets.
 
 ## Required Compile Flags:
    None
