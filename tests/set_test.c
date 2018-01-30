@@ -30,7 +30,7 @@ void initialize_set(SimpleSet *set, int start, int elements, int itter, int TEST
 
 int main() {
     Timing t;
-	timing_start(&t);
+    timing_start(&t);
 
     int added_elements, res, inaccuraces = 0;
     uint64_t i, elements = 50000;
@@ -102,7 +102,7 @@ int main() {
     assert(inaccuraces == 0);
     printf("Non-present keys check: OK!\n");
 
-    /*  Test removing elements from the set */
+    /* Test removing elements from the set */
     printf("\n\n==== Test Set Remove ====\n");
     for (i = elements / 2; i < elements; i++) {
         char key[KEY_LEN] = {0};
