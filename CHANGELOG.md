@@ -3,6 +3,7 @@
 ### Version 0.1.9
 * Speed up the node removal process
 * Set compare function
+    * New definitions for comparison results
 * Set clear function
 
 ### Version 0.1.8

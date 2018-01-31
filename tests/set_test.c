@@ -8,6 +8,20 @@
 
 #define KEY_LEN 25
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KCYN  "\x1B[36m"
+
+
+void success_or_failure(int res) {
+    if (res == 1) {
+        printf(KGRN "success!\n" KNRM);
+    } else {
+        printf(KRED "failure!\n" KNRM);
+    }
+}
+
 void check_string(SimpleSet *set, char *key) {
     if (set_contains(set, key) == SET_TRUE) {
         printf("Set contains [%s]!\n", key);
@@ -32,7 +46,8 @@ int main() {
     Timing t;
     timing_start(&t);
 
-    int added_elements, res, inaccuraces = 0;
+    unsigned int added_elements;
+    int res, inaccuraces = 0;
     uint64_t i, elements = 50000;
     uint64_t ui;
 
@@ -63,22 +78,25 @@ int main() {
 
     /* Test the length of the set */
     printf("==== Set B Length Test ====\n");
-    assert(set_length(&B) == elements / 2);
-    printf("Set length test: OK!\n");
+    printf("Set length test: ");
+    success_or_failure(set_length(&B) == elements / 2);
+
 
     /*  Test that inserting the same element into the set does not increase the
         number of nodes. */
     printf("==== Test Double Insertion ===\n");
     added_elements = A.used_nodes;
     initialize_set(&A, 0, elements / 2, 1, SET_ALREADY_PRESENT);
-    assert(added_elements = A.used_nodes);
-    printf("Double Insetion check: OK!\n");
+    printf("Double Insetion check: ");
+    success_or_failure(added_elements == A.used_nodes);
+
 
     /*  Test the contains functions for keys that exist and keys that are not in
         the set */
     printf("\n\n==== Test Set Contains ====\n");
     printf("The symbol ∈ indicates set membership and means “is an element of” so that the statement x ∈ A means that x is an element of the set A. In other words, x is one of the objects in the collection of (possibly many) objects in the set A.\n");
 
+    printf("Missing keyes check: ");
     for (i = 0; i < elements; i++) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
@@ -87,9 +105,10 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Missing keyes check: OK!\n");
+    success_or_failure(inaccuraces == 0);
 
+
+    printf("Non-present keys check: ");
     inaccuraces = 0;
     for (i = elements; i < elements * 2; i++) {
         char key[KEY_LEN] = {0};
@@ -99,11 +118,12 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Non-present keys check: OK!\n");
+    success_or_failure(inaccuraces == 0);
 
     /* Test removing elements from the set */
     printf("\n\n==== Test Set Remove ====\n");
+
+    printf("Remove keys didn't throw error: ");
     for (i = elements / 2; i < elements; i++) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
@@ -111,9 +131,9 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    assert(A.used_nodes == elements / 2);
+    success_or_failure(inaccuraces == 0 && A.used_nodes == elements / 2);
 
+    printf("Remove keys check: ");
     inaccuraces = 0;
     for (i = 0; i < elements; i++) {
         char key[KEY_LEN] = {0};
@@ -130,12 +150,12 @@ int main() {
             }
         }
     }
-    assert(inaccuraces == 0);
+    success_or_failure(inaccuraces == 0);
 
-    printf("Remove keys check: OK!\n");
 
     /* Test clearing a set and then reset to its original value */
     printf("\n\n==== Reset A ====\n");
+    printf("Clear set A: ");
     set_clear(&A);
     inaccuraces = 0;
     for(ui=0; ui < A.number_nodes; ui++) {
@@ -143,77 +163,77 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    assert(A.used_nodes == 0);
+    success_or_failure(inaccuraces == 0 && A.used_nodes == 0);
+    printf("Reset initialize A: ");
     initialize_set(&A, 0, elements, 1, SET_TRUE);
-    assert(A.used_nodes == elements);
-    printf("Reset A: OK!\n");
+    success_or_failure(A.used_nodes == elements);
+
 
     /* Test subset functionality. A is a superset of B. B is a subset of A */
     printf("\n\n==== Test Set Subset ====\n");
     printf("A set A is a subset of another set B if all elements of the set A are elements of the set B. In other words, the set A is contained inside the set B. The subset relationship is denoted as A ⊆ B.\n");
     res = set_is_subset(&A, &B);
-    printf("A ⊆ B: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_FALSE);
+    printf("A ⊆ B: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_FALSE);
     res = set_is_subset(&B, &A);
-    printf("B ⊆ A: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_TRUE);
+    printf("B ⊆ A: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_TRUE);
     res = set_is_subset(&A, &A);
-    printf("A ⊆ A: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_TRUE);
+    printf("A ⊆ A: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_TRUE);
     res = set_is_subset(&B, &B);
-    printf("B ⊆ B: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_TRUE);
+    printf("B ⊆ B: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_TRUE);
 
     /*  Test strict subset functionality. A is a superset of B. B is a subset
         of A */
     printf("\n\n==== Test Set Strict Subset ====\n");
     printf("Set A is a strict subset of another set B if all elements of the set A are elements of the set B. In other words, the set A is contained inside the set B. A ≠ B is required. The strict subset relationship is denoted as A ⊂ B.\n");
     res = set_is_subset_strict(&A, &B);
-    printf("A ⊂ B: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_FALSE);
+    printf("A ⊂ B: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_FALSE);
     res = set_is_subset_strict(&B, &A);
-    printf("B ⊂ A: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_TRUE);
+    printf("B ⊂ A: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_TRUE);
     res = set_is_subset_strict(&A, &A);
-    printf("A ⊂ A: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_FALSE);
+    printf("A ⊂ A: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_FALSE);
     res = set_is_subset_strict(&B, &B);
-    printf("B ⊂ B: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_FALSE);
+    printf("B ⊂ B: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_FALSE);
 
     /* Test superset functionality. A is a superset of B. B is a subset of A */
     printf("\n\n==== Test Set Superset ====\n");
     printf("Superset Definition: A set A is a superset of another set B if all elements of the set B are elements of the set A. The superset relationship is denoted as A ⊇ B.\n");
     res = set_is_superset(&A, &B);
-    printf("A ⊇ B: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_TRUE);
+    printf("A ⊇ B: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_TRUE);
     res = set_is_superset(&B, &A);
-    printf("B ⊇ A: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_FALSE);
+    printf("B ⊇ A: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_FALSE);
     res = set_is_superset(&A, &A);
-    printf("A ⊇ A: %s\n", res  == 0 ? "yes" : "no");
-    assert(res == SET_TRUE);
+    printf("A ⊇ A: %s - ", res  == 0 ? "yes" : "no");
+    success_or_failure(res == SET_TRUE);
     res = set_is_superset(&B, &B);
-    printf("B ⊇ B: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_TRUE);
+    printf("B ⊇ B: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_TRUE);
 
     /*  Test strict superset functionality. A is a superset of B. B is a
         subset of A */
     printf("\n\n==== Test Set Strict Superset ====\n");
     printf("Strict Superset Definition: A set A is a superset of another set B if all elements of the set B are elements of the set A. A ≠ B is required. The superset relationship is denoted as A ⊃ B.\n");
     res = set_is_superset_strict(&A, &B);
-    printf("A ⊃ B: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_TRUE);
+    printf("A ⊃ B: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_TRUE);
     res = set_is_superset_strict(&B, &A);
-    printf("B ⊃ A: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_FALSE);
+    printf("B ⊃ A: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_FALSE);
     res = set_is_superset_strict(&A, &A);
-    printf("A ⊃ A: %s\n", res  == 0 ? "yes" : "no");
-    assert(res == SET_FALSE);
+    printf("A ⊃ A: %s - ", res  == 0 ? "yes" : "no");
+    success_or_failure(res == SET_FALSE);
     res = set_is_superset_strict(&B, &B);
-    printf("B ⊃ B: %s\n", res == 0 ? "yes" : "no");
-    assert(res == SET_FALSE);
+    printf("B ⊃ B: %s - ", res == 0 ? "yes" : "no");
+    success_or_failure(res == SET_FALSE);
 
     /* Test Set Intersection functionality. */
     printf("\n\n==== Test Set Intersection ====\n");
@@ -250,8 +270,8 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Non-present keys check: OK!\n");
+    printf("Non-present keys check: ");
+    success_or_failure(inaccuraces == 0);
 
     inaccuraces = 0;
     for (i = elements / 2; i < elements; i++) {
@@ -262,8 +282,8 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Missing keys check: OK!\n");
+    printf("Missing keys check: ");
+    success_or_failure(inaccuraces == 0);
 
 
     /*  Test Set Difference: A ∖ B where C contains only those elements from A
@@ -283,8 +303,8 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Missing keys check: OK!\n");
+    printf("Missing keys check: ");
+    success_or_failure(inaccuraces == 0);
 
     inaccuraces = 0;
     for (i = elements + 1; i < elements * 2;  i++) {
@@ -295,8 +315,8 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Non-present keys check: OK!\n");
+    printf("Non-present keys check: ");
+    success_or_failure(inaccuraces == 0);
 
 
     /*  Test Symmetric Difference: C = A △ B is where C contains only elements
@@ -325,8 +345,8 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Missing keys check: OK!\n");
+    printf("Missing keys check: ");
+    success_or_failure(inaccuraces == 0);
 
     inaccuraces = 0;
     for (i = elements / 2 + 1; i < elements;  i++) {
@@ -337,8 +357,8 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Non-present keys check: OK!\n");
+    printf("Non-present keys check: ");
+    success_or_failure(inaccuraces == 0);
 
 
     /*  Test Set Union: C = A ∪ B denotes that all elements from A and B are
@@ -357,8 +377,8 @@ int main() {
             inaccuraces++;
         }
     }
-    assert(inaccuraces == 0);
-    printf("Missing keys check: OK!\n");
+    printf("Missing keys check: ");
+    success_or_failure(inaccuraces == 0);
 
     set_clear(&A);
     set_clear(&B);
@@ -368,20 +388,16 @@ int main() {
     printf("\n\n==== Test Set Compare ====\n");
     printf("Sets are different in size Left larger than Right: ");
     res = set_cmp(&C, &A);
-    assert(res == 1);
-    printf("OK!\n");
+    success_or_failure(res == SET_LEFT_GREATER);
     printf("Sets are different in size Right larger than Left: ");
     res = set_cmp(&A, &C);
-    assert(res == -1);
-    printf("OK!\n");
+    success_or_failure(res == SET_RIGHT_GREATER);
     printf("Sets are exactly the same (keys and size): ");
     res = set_cmp(&A, &A);
-    assert(res == 0);
-    printf("OK!\n");
+    success_or_failure(res == SET_EQUAL);
     printf("Sets are the same size but different keys: ");
     res = set_cmp(&A, &B);
-    assert(res == 2);
-    printf("OK!\n");
+    success_or_failure(res == SET_UNEQUAL);
 
     printf("\n\n==== Clean Up Memory ====\n");
     set_destroy(&A);

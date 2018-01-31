@@ -148,5 +148,10 @@ int set_cmp(SimpleSet *left, SimpleSet *right);
 #define SET_OCCUPIED_ERROR -4
 #define SET_ALREADY_PRESENT 1
 
+#define SET_RIGHT_GREATER -1
+#define SET_LEFT_GREATER 1
+#define SET_EQUAL 0
+#define SET_UNEQUAL 2
+
 
 #endif /* END SIMPLE SET HEADER */
