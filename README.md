@@ -65,11 +65,11 @@ int main(int argc, char** argv) {
     SimpleSet set;
     set_init(&set);
     int i;
-    #pragma parallel for private(i)
+    #pragma omp parallel for private(i)
     for (i = 0; i < 500000; i++) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%d", i);
-        #pragma critical (set_lock)
+        #pragma omp critical (set_lock)
         {
             set_add(&set, key);
         }
