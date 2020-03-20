@@ -3,7 +3,7 @@
 ***     Author: Tyler Barrus
 ***     email:  barrust@gmail.com
 ***
-***     Version: 0.1.9
+***     Version: 0.2.0
 ***     Purpose: Simple, yet effective, set implementation
 ***
 ***     License: MIT 2016
@@ -17,7 +17,7 @@
 
 #include <inttypes.h>       /* uint64_t */
 
-typedef uint64_t (*set_hash_function) (char *key);
+typedef uint64_t (*set_hash_function) (const char *key);
 
 typedef struct  {
     char* _key;
@@ -36,7 +36,7 @@ typedef struct  {
 int set_init(SimpleSet *set);
 
 /* Initialize the set with a different hash function */
-int set_init_alt(SimpleSet *set, set_hash_function hash);
+int set_init_alt(SimpleSet *set, uint64_t num_els, set_hash_function hash);
 
 /* Utility function to clear out the set */
 int set_clear(SimpleSet *set);
@@ -47,15 +47,15 @@ int set_destroy(SimpleSet *set);
 /*  Add element to set, returns SET_TRUE if added, SET_FALSE if already
     present, SET_ALREADY_PRESENT, or SET_CIRCULAR_ERROR if set is
     completely full */
-int set_add(SimpleSet *set, char *key);
+int set_add(SimpleSet *set, const char *key);
 
 /*  Remove element from the set; Returns SET_TRUE if removed, SET_FALSE if
     not present */
-int set_remove(SimpleSet *set, char *key);
+int set_remove(SimpleSet *set, const char *key);
 
 /*  Check if key in hash; Returns SET_TRUE if present, SET_FALSE if not
     found, or SET_CIRCULAR_ERROR if set is full and not found */
-int set_contains(SimpleSet *set, char *key);
+int set_contains(SimpleSet *set, const char *key);
 
 /* Return the number of elements in the set */
 uint64_t set_length(SimpleSet *set);

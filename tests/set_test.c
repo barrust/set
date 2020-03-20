@@ -61,11 +61,11 @@ int main() {
     char** keys = set_to_array(&A, &ui);
     assert(A.used_nodes == ui);  // in multi-thread, don't want to assume it hasn't changed
     printf("==== Set A has %" PRIu64 " Keys ====\n", ui);
-    for (i = 0; i < 15; i++) {
+    for (i = 0; i < 15; ++i) {
         printf("%" PRIu64 "\t%s\n", i, keys[i]);
     }
     // free the keys memory
-    for (i = 0; i < ui; i++) {
+    for (i = 0; i < ui; ++i) {
         free(keys[i]);
     }
     free(keys);
@@ -97,12 +97,12 @@ int main() {
     printf("The symbol ∈ indicates set membership and means “is an element of” so that the statement x ∈ A means that x is an element of the set A. In other words, x is one of the objects in the collection of (possibly many) objects in the set A.\n");
 
     printf("Missing keyes check: ");
-    for (i = 0; i < elements; i++) {
+    for (i = 0; i < elements; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&A, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     success_or_failure(inaccuraces == 0);
@@ -110,12 +110,12 @@ int main() {
 
     printf("Non-present keys check: ");
     inaccuraces = 0;
-    for (i = elements; i < elements * 2; i++) {
+    for (i = elements; i < elements * 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i * -1);
         if (set_contains(&A, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     success_or_failure(inaccuraces == 0);
@@ -124,29 +124,29 @@ int main() {
     printf("\n\n==== Test Set Remove ====\n");
 
     printf("Remove keys didn't throw error: ");
-    for (i = elements / 2; i < elements; i++) {
+    for (i = elements / 2; i < elements; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_remove(&A, key) != SET_TRUE) {
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     success_or_failure(inaccuraces == 0 && A.used_nodes == elements / 2);
 
     printf("Remove keys check: ");
     inaccuraces = 0;
-    for (i = 0; i < elements; i++) {
+    for (i = 0; i < elements; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (i >= elements / 2) {
             if (set_contains(&A, key) == SET_TRUE) {
                 printf("Additional Key: [%s]\n", key);
-                inaccuraces++;
+                ++inaccuraces;
             }
         } else {
             if (set_contains(&A, key) != SET_TRUE) {
                 printf("Missing Key: [%s]\n", key);
-                inaccuraces++;
+                ++inaccuraces;
             }
         }
     }
@@ -158,9 +158,9 @@ int main() {
     printf("Clear set A: ");
     set_clear(&A);
     inaccuraces = 0;
-    for(ui=0; ui < A.number_nodes; ui++) {
+    for(ui=0; ui < A.number_nodes; ++ui) {
         if (A.nodes[ui] != NULL) {
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     success_or_failure(inaccuraces == 0 && A.used_nodes == 0);
@@ -254,32 +254,32 @@ int main() {
     assert(C.used_nodes == (elements / 2));
 
     inaccuraces = 0;
-    for (i = 0; i < elements / 2;  i++) {
+    for (i = 0; i < elements / 2;  ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
-    for (i = elements + 1; i < elements * 2;  i++) {
+    for (i = elements + 1; i < elements * 2;  ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     printf("Non-present keys check: ");
     success_or_failure(inaccuraces == 0);
 
     inaccuraces = 0;
-    for (i = elements / 2; i < elements; i++) {
+    for (i = elements / 2; i < elements; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     printf("Missing keys check: ");
@@ -295,24 +295,24 @@ int main() {
     assert(C.used_nodes == (elements / 2));
 
     inaccuraces = 0;
-    for (i = 0; i < elements / 2; i++) {
+    for (i = 0; i < elements / 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     printf("Missing keys check: ");
     success_or_failure(inaccuraces == 0);
 
     inaccuraces = 0;
-    for (i = elements + 1; i < elements * 2;  i++) {
+    for (i = elements + 1; i < elements * 2;  ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     printf("Non-present keys check: ");
@@ -329,32 +329,32 @@ int main() {
 
     printf("Completed the set_symmetric_difference\n");
     inaccuraces = 0;
-    for (i = 0; i < elements / 2; i++) {
+    for (i = 0; i < elements / 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
-    for (i = elements; i < elements * 2; i++) {
+    for (i = elements; i < elements * 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     printf("Missing keys check: ");
     success_or_failure(inaccuraces == 0);
 
     inaccuraces = 0;
-    for (i = elements / 2 + 1; i < elements;  i++) {
+    for (i = elements / 2 + 1; i < elements;  ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     printf("Non-present keys check: ");
@@ -369,12 +369,12 @@ int main() {
     set_union(&C, &A, &B);
     assert(C.used_nodes == elements * 2);
 
-    for (i = elements; i < elements * 2; i++) {
+    for (i = elements; i < elements * 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (set_contains(&C, key) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
-            inaccuraces++;
+            ++inaccuraces;
         }
     }
     printf("Missing keys check: ");
