@@ -12,4 +12,5 @@ set:
 	$(CC) -c ./$(SRCDIR)/set.c -o ./$(DISTDIR)/set.o $(CFLAGS)
 
 clean:
-	if [ -d "./$(DISTDIR)/" ]; then rm -rf ./$(DISTDIR)/*; fi
+	if [ -f "./$(DISTDIR)/set.o" ]; then rm -r ./$(DISTDIR)/set.o; fi
+	if [ -f "./$(DISTDIR)/s" ]; then rm -r ./$(DISTDIR)/s; fi

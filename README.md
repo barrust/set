@@ -1,9 +1,11 @@
 # set
-Implementation of sets in C
+Implementation of sets in **C**
 
 Sets allow for quick checks for inclusion and exclusion
 
 This implementation provides a simple and generally quick method to get set functionality into a C program quickly. It was developed to provide a basis for testing and benchmarking performance along with providing a purposeful, low overhead library. Currently only supports strings.
+
+To use the library, copy the `src/set.h` and `src/set.c` files into your project and include it where needed.
 
 ## License
 MIT 2016
