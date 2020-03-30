@@ -5,7 +5,7 @@ DISTDIR=dist
 TESTDIR=tests
 
 
-all: clean set
+all: set
 	$(CC) ./$(DISTDIR)/set.o $(CFLAGS) ./$(TESTDIR)/set_test.c -o ./$(DISTDIR)/s
 
 set:
