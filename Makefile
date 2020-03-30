@@ -12,4 +12,4 @@ set:
 	$(CC) -c ./$(SRCDIR)/set.c -o ./$(DISTDIR)/set.o $(CFLAGS)
 
 clean:
-	rm -rf ./$(DISTDIR)/*
+	if [ -d "./$(DISTDIR)/" ]; then rm -rf ./$(DISTDIR)/*; fi
