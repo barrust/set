@@ -2,16 +2,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-// #include <openssl/md5.h>
-
 #include "minunit.h"
 #include "../src/set.h"
 
 
 // the basic set to use!
 SimpleSet s;
-
-// static int calculate_md5sum(const char* filename, char* digest);
 
 
 void test_setup(void) {
@@ -29,6 +25,7 @@ void test_teardown(void) {
 MU_TEST(test_default_setup) {
     mu_assert_int_eq(1024, s.number_nodes);  /* 1024 is the INITIAL_NUM_ELEMENTS definition! */
     mu_assert_int_eq(0, s.used_nodes);
+    mu_assert_int_eq(0, set_length(&s));
 }
 
 MU_TEST(test_alt_setup) {
@@ -40,6 +37,53 @@ MU_TEST(test_alt_setup) {
 }
 
 
+/*******************************************************************************
+*   Test add, contains, remove elements
+*******************************************************************************/
+MU_TEST(test_add_key) {
+    mu_assert_int_eq(SET_TRUE, set_add(&s,"test"));
+    mu_assert_int_eq(1, set_length(&s));
+}
+
+MU_TEST(test_add_key_twice) {
+    mu_assert_int_eq(SET_TRUE, set_add(&s, "test"));
+    mu_assert_int_eq(SET_ALREADY_PRESENT, set_add(&s, "test"));
+    mu_assert_int_eq(1, set_length(&s));
+}
+
+MU_TEST(test_remove_key) {
+    mu_assert_int_eq(SET_TRUE, set_add(&s, "test"));
+    mu_assert_int_eq(1, set_length(&s));
+
+    mu_assert_int_eq(SET_TRUE, set_remove(&s, "test"));
+    mu_assert_int_eq(0, set_length(&s));
+    mu_assert_int_eq(SET_FALSE, set_remove(&s, "test"));  // no longer present, return false!
+}
+
+MU_TEST(test_set_contains) {
+    mu_assert_int_eq(SET_TRUE, set_add(&s, "test"));
+    mu_assert_int_eq(1, set_length(&s));
+
+    mu_assert_int_eq(SET_TRUE, set_contains(&s, "test"));
+    mu_assert_int_eq(SET_FALSE, set_contains(&s, "blah"));
+}
+
+
+MU_TEST(test_grow_set) {
+    for (int i = 0; i < 3000; ++i) {
+        char key[5] = {0};
+        sprintf(key, "%d", i);
+        set_add(&s, key);
+    }
+    mu_assert_int_eq(3000, set_length(&s));
+    mu_assert_int_eq(16384, s.number_nodes);  /* grew 4x */
+}
+
+
+
+/*******************************************************************************
+*   Testsuite
+*******************************************************************************/
 MU_TEST_SUITE(test_suite) {
     MU_SUITE_CONFIGURE(&test_setup, &test_teardown);
 
@@ -47,6 +91,12 @@ MU_TEST_SUITE(test_suite) {
     MU_RUN_TEST(test_default_setup);
     MU_RUN_TEST(test_alt_setup);
 
+    /* add & remove */
+    MU_RUN_TEST(test_add_key);
+    MU_RUN_TEST(test_add_key_twice);
+    MU_RUN_TEST(test_remove_key);
+    MU_RUN_TEST(test_set_contains);
+    MU_RUN_TEST(test_grow_set);
 }
 
 
@@ -59,40 +109,3 @@ int main() {
     printf("Number failed tests: %d\n", minunit_fail);
     return minunit_fail;
 }
-
-
-/* private functions */
-// static int calculate_md5sum(const char* filename, char* digest) {
-//     FILE *file_ptr;
-//     file_ptr = fopen(filename, "r");
-//     if (file_ptr == NULL) {
-//         perror("Error opening file");
-//         fflush(stdout);
-//         return 1;
-//     }
-//
-//     int n;
-//     MD5_CTX c;
-//     char buf[512];
-//     ssize_t bytes;
-//     unsigned char out[MD5_DIGEST_LENGTH];
-//
-//     MD5_Init(&c);
-//     do {
-//         bytes = fread(buf, 1, 512, file_ptr);
-//         MD5_Update(&c, buf, bytes);
-//     } while(bytes > 0);
-//
-//     MD5_Final(out, &c);
-//
-//     for (n = 0; n < MD5_DIGEST_LENGTH; n++) {
-//         char hex[3] = {0};
-//         sprintf(hex, "%02x", out[n]);
-//         digest[n*2] = hex[0];
-//         digest[n*2+1] = hex[1];
-//     }
-//
-//     fclose(file_ptr);
-//
-//     return 0;
-// }

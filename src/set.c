@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include "set.h"
 
-#define INITIAL_NUM_ELEMENTS 1024
 #define MAX_FULLNESS_PERCENT 0.25       /* arbitrary */
 
 /* PRIVATE FUNCTIONS */
@@ -29,10 +28,6 @@ static void __relayout_nodes(SimpleSet *set, uint64_t start, short end_on_null);
 /*******************************************************************************
 ***        FUNCTIONS DEFINITIONS
 *******************************************************************************/
-
-int set_init(SimpleSet *set) {
-    return set_init_alt(set, INITIAL_NUM_ELEMENTS, NULL);
-}
 
 int set_init_alt(SimpleSet *set, uint64_t num_els, set_hash_function hash) {
     set->nodes = (simple_set_node**) malloc(num_els * sizeof(simple_set_node*));
@@ -89,7 +84,7 @@ int set_remove(SimpleSet *set, const char *key) {
     __free_index(set, index);
     // re-layout nodes
     __relayout_nodes(set, index, 0);
-    set->used_nodes--;
+    --set->used_nodes;
     return SET_TRUE;
 }
 

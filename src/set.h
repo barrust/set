@@ -17,6 +17,12 @@
 
 #include <inttypes.h>       /* uint64_t */
 
+
+/* https://gcc.gnu.org/onlinedocs/gcc/Alternate-Keywords.html#Alternate-Keywords */
+#ifndef __GNUC__
+#define __inline__ inline
+#endif
+
 typedef uint64_t (*set_hash_function) (const char *key);
 
 typedef struct  {
@@ -32,16 +38,23 @@ typedef struct  {
 } SimpleSet, simple_set;
 
 
-/* Initialize the set with default values */
-int set_init(SimpleSet *set);
 
-/* Initialize the set with a different hash function */
+/*  Initialize the set either with default parameters (hash function and space)
+    or optionally set the set with specifed values
+
+    Returns:
+        SET_MALLOC_ERROR: If an error occured setting up the memory
+        SET_TRUE: On success
+*/
 int set_init_alt(SimpleSet *set, uint64_t num_els, set_hash_function hash);
+static __inline__ int set_init(SimpleSet *set) {
+    return set_init_alt(set, 1024, NULL);
+}
 
 /* Utility function to clear out the set */
 int set_clear(SimpleSet *set);
 
-/* Free memory */
+/* Free all memory that is part of the set */
 int set_destroy(SimpleSet *set);
 
 /*  Add element to set, returns SET_TRUE if added, SET_ALREADY_PRESENT if
