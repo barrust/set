@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include <openssl/md5.h>
+// #include <openssl/md5.h>
 
 #include "minunit.h"
 #include "../src/set.h"
@@ -11,7 +11,7 @@
 // the basic set to use!
 SimpleSet s;
 
-static int calculate_md5sum(const char* filename, char* digest);
+// static int calculate_md5sum(const char* filename, char* digest);
 
 
 void test_setup(void) {
@@ -62,37 +62,37 @@ int main() {
 
 
 /* private functions */
-static int calculate_md5sum(const char* filename, char* digest) {
-    FILE *file_ptr;
-    file_ptr = fopen(filename, "r");
-    if (file_ptr == NULL) {
-        perror("Error opening file");
-        fflush(stdout);
-        return 1;
-    }
-
-    int n;
-    MD5_CTX c;
-    char buf[512];
-    ssize_t bytes;
-    unsigned char out[MD5_DIGEST_LENGTH];
-
-    MD5_Init(&c);
-    do {
-        bytes = fread(buf, 1, 512, file_ptr);
-        MD5_Update(&c, buf, bytes);
-    } while(bytes > 0);
-
-    MD5_Final(out, &c);
-
-    for (n = 0; n < MD5_DIGEST_LENGTH; n++) {
-        char hex[3] = {0};
-        sprintf(hex, "%02x", out[n]);
-        digest[n*2] = hex[0];
-        digest[n*2+1] = hex[1];
-    }
-
-    fclose(file_ptr);
-
-    return 0;
-}
+// static int calculate_md5sum(const char* filename, char* digest) {
+//     FILE *file_ptr;
+//     file_ptr = fopen(filename, "r");
+//     if (file_ptr == NULL) {
+//         perror("Error opening file");
+//         fflush(stdout);
+//         return 1;
+//     }
+//
+//     int n;
+//     MD5_CTX c;
+//     char buf[512];
+//     ssize_t bytes;
+//     unsigned char out[MD5_DIGEST_LENGTH];
+//
+//     MD5_Init(&c);
+//     do {
+//         bytes = fread(buf, 1, 512, file_ptr);
+//         MD5_Update(&c, buf, bytes);
+//     } while(bytes > 0);
+//
+//     MD5_Final(out, &c);
+//
+//     for (n = 0; n < MD5_DIGEST_LENGTH; n++) {
+//         char hex[3] = {0};
+//         sprintf(hex, "%02x", out[n]);
+//         digest[n*2] = hex[0];
+//         digest[n*2+1] = hex[1];
+//     }
+//
+//     fclose(file_ptr);
+//
+//     return 0;
+// }

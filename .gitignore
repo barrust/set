@@ -2,8 +2,8 @@
 *.gcno
 *.gcda
 *.gcov
-dist
-
+dist/*
+!dist/.gitkeep
 
 
 # Prerequisites
