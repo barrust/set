@@ -148,6 +148,47 @@ MU_TEST(test_set_cmp) {
 
 
 /*******************************************************************************
+*   Test set subset and strict subset
+*******************************************************************************/
+MU_TEST(test_set_subsets_and_supersets) {
+    SimpleSet a, b;
+    set_init(&a);
+    set_init(&b);
+
+    for (int i = 0; i < 150; ++i) {
+        char key[5] = {0};
+        sprintf(key, "%d", i);
+        set_add(&a, key);
+        set_add(&b, key);
+    }
+
+    // they currently are the same
+    mu_assert_int_eq(SET_FALSE, set_is_subset_strict(&a, &b));
+    mu_assert_int_eq(SET_FALSE, set_is_superset_strict(&a, &b));
+
+    // make one a superset
+    set_add(&a, "test");
+
+    // subset
+    mu_assert_int_eq(SET_TRUE, set_is_subset(&b, &a));
+    mu_assert_int_eq(SET_FALSE, set_is_subset(&a, &b));
+
+    // superset
+    mu_assert_int_eq(SET_FALSE, set_is_superset(&b, &a));
+    mu_assert_int_eq(SET_TRUE, set_is_superset(&a, &b));
+
+    // strict
+    mu_assert_int_eq(SET_TRUE, set_is_subset_strict(&b, &a));
+    mu_assert_int_eq(SET_FALSE, set_is_subset_strict(&a, &b));
+
+    mu_assert_int_eq(SET_FALSE, set_is_superset_strict(&b, &a));
+    mu_assert_int_eq(SET_TRUE, set_is_superset_strict(&a, &b));
+
+    set_destroy(&a);
+    set_destroy(&b);
+}
+
+/*******************************************************************************
 *   Testsuite
 *******************************************************************************/
 MU_TEST_SUITE(test_suite) {
@@ -169,6 +210,9 @@ MU_TEST_SUITE(test_suite) {
 
     /* set compare */
     MU_RUN_TEST(test_set_cmp);
+
+    /* set subset and superset*/
+    MU_RUN_TEST(test_set_subsets_and_supersets);
 }
 
 

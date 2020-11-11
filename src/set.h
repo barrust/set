@@ -63,6 +63,7 @@ int set_destroy(SimpleSet *set);
         SET_TRUE if added
         SET_ALREADY_PRESENT if already present
         SET_CIRCULAR_ERROR if set is completely full
+        SET_MALLOC_ERROR if unable to grow the set
     NOTE: SET_CIRCULAR_ERROR should never happen, but is there for insurance!
 */
 int set_add(SimpleSet *set, const char *key);
@@ -141,7 +142,9 @@ int set_is_subset(SimpleSet *test, SimpleSet *against);
     elements of the set B are elements of the set A. The superset
     relationship is denoted as A ⊇ B
 */
-int set_is_superset(SimpleSet *test, SimpleSet *against);
+static __inline__ int set_is_superset(SimpleSet *test, SimpleSet *against) {
+    return set_is_subset(against, test);
+}
 
 /*  Strict subset ensures that the test is a subset of against, but that
     the two are also not equal.
@@ -162,7 +165,9 @@ int set_is_subset_strict(SimpleSet *test, SimpleSet *against);
     all elements of the set B are elements of the set A. A ≠ B is required.
     The superset relationship is denoted as A ⊃ B
 */
-int set_is_superset_strict(SimpleSet *test, SimpleSet *against);
+static __inline__ int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
+    return set_is_subset_strict(against, test);
+}
 
 /*  Return an array of the elements in the set
     NOTE: Up to the caller to free the memory */

@@ -203,14 +203,6 @@ int set_is_subset_strict(SimpleSet *test, SimpleSet *against) {
     return set_is_subset(test, against);
 }
 
-int set_is_superset(SimpleSet *test, SimpleSet *against) {
-    return set_is_subset(against, test);
-}
-
-int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
-    return set_is_subset_strict(against, test);
-}
-
 int set_cmp(SimpleSet *left, SimpleSet *right) {
     if (left->used_nodes < right->used_nodes) {
         return SET_RIGHT_GREATER;
