@@ -44,9 +44,8 @@ int set_clear(SimpleSet *set);
 /* Free memory */
 int set_destroy(SimpleSet *set);
 
-/*  Add element to set, returns SET_TRUE if added, SET_FALSE if already
-    present, SET_ALREADY_PRESENT, or SET_CIRCULAR_ERROR if set is
-    completely full */
+/*  Add element to set, returns SET_TRUE if added, SET_ALREADY_PRESENT if
+    already present, or SET_CIRCULAR_ERROR if set is completely full */
 int set_add(SimpleSet *set, const char *key);
 
 /*  Remove element from the set; Returns SET_TRUE if removed, SET_FALSE if

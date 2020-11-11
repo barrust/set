@@ -218,20 +218,20 @@ int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
 
 int set_cmp(SimpleSet *left, SimpleSet *right) {
     if (left->used_nodes < right->used_nodes) {
-        return -1;
+        return SET_RIGHT_GREATER;
     } else if (right->used_nodes < left->used_nodes) {
-        return 1;
+        return SET_LEFT_GREATER;
     }
     uint64_t i;
     for (i = 0; i < left->number_nodes; ++i) {
         if (left->nodes[i] != NULL) {
             if (set_contains(right, left->nodes[i]->_key) != SET_TRUE) {
-                return 2;
+                return SET_UNEQUAL;
             }
         }
     }
 
-    return 0;
+    return SET_EQUAL;
 }
 
 
