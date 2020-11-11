@@ -2,6 +2,8 @@
 
 ### Version 0.2.0
 * Add ability to set the initial size of the set
+* Correct usage of `const char*`
+* Added in-depth testsuite
 
 ### Version 0.1.9
 * Speed up the node removal process

@@ -188,6 +188,149 @@ MU_TEST(test_set_subsets_and_supersets) {
     set_destroy(&b);
 }
 
+
+/*******************************************************************************
+*   Test Union, Intersection, and Difference
+*******************************************************************************/
+MU_TEST(test_set_union) {
+    SimpleSet a, b;
+    set_init(&a);
+    set_init(&b);
+
+    for (int i = 0; i < 150; ++i) {
+        char key_a[5] = {0};
+        char key_b[5] = {0};
+        sprintf(key_a, "%d", i);
+        sprintf(key_b, "%d", i + 75);
+        set_add(&a, key_a);
+        set_add(&b, key_b);
+    }
+
+    mu_assert_int_eq(SET_TRUE, set_union(&s, &a, &b));
+    mu_assert_int_eq(225, set_length(&s));
+
+    int v = 0;
+    for (int i = 0; i < 225; ++i) {
+        char key[5] = {0};
+        sprintf(key, "%d", i);
+        v += (set_contains(&s, key) == SET_TRUE ? 0 : 1);
+    }
+    mu_assert_int_eq(0, v);
+
+    set_destroy(&a);
+    set_destroy(&b);
+}
+
+MU_TEST(test_set_union_into_used) {
+    set_add(&s, "test");
+    mu_assert_int_eq(SET_OCCUPIED_ERROR, set_union(&s, &s, &s));
+}
+
+MU_TEST(test_set_intersection) {
+    SimpleSet a, b;
+    set_init(&a);
+    set_init(&b);
+
+    for (int i = 0; i < 150; ++i) {
+        char key_a[5] = {0};
+        char key_b[5] = {0};
+        sprintf(key_a, "%d", i);
+        sprintf(key_b, "%d", i + 75);
+        set_add(&a, key_a);
+        set_add(&b, key_b);
+    }
+
+    mu_assert_int_eq(SET_TRUE, set_intersection(&s, &a, &b));
+    mu_assert_int_eq(75, set_length(&s));
+
+    int v = 0;
+    for (int i = 0; i < 75; ++i) {
+        char key[5] = {0};
+        sprintf(key, "%d", i + 75);
+        v += (set_contains(&s, key) == SET_TRUE ? 0 : 1);
+    }
+    mu_assert_int_eq(0, v);
+
+    set_destroy(&a);
+    set_destroy(&b);
+}
+
+MU_TEST(test_set_intersection_into_used) {
+    set_add(&s, "test");
+    mu_assert_int_eq(SET_OCCUPIED_ERROR, set_intersection(&s, &s, &s));
+}
+
+MU_TEST(test_set_difference) {
+    SimpleSet a, b;
+    set_init(&a);
+    set_init(&b);
+
+    for (int i = 0; i < 150; ++i) {
+        char key_a[5] = {0};
+        char key_b[5] = {0};
+        sprintf(key_a, "%d", i);
+        sprintf(key_b, "%d", i + 75);
+        set_add(&a, key_a);
+        set_add(&b, key_b);
+    }
+
+    mu_assert_int_eq(SET_TRUE, set_difference(&s, &a, &b));
+    mu_assert_int_eq(75, set_length(&s));
+
+    int v = 0;
+    for (int i = 0; i < 75; ++i) {
+        char key[5] = {0};
+        sprintf(key, "%d", i);
+        v += (set_contains(&s, key) == SET_TRUE ? 0 : 1);
+    }
+    mu_assert_int_eq(0, v);
+
+    set_destroy(&a);
+    set_destroy(&b);
+}
+
+MU_TEST(test_set_difference_into_used) {
+    set_add(&s, "test");
+    mu_assert_int_eq(SET_OCCUPIED_ERROR, set_difference(&s, &s, &s));
+}
+
+MU_TEST(test_set_symmetric_difference) {
+    SimpleSet a, b;
+    set_init(&a);
+    set_init(&b);
+
+    for (int i = 0; i < 150; ++i) {
+        char key_a[5] = {0};
+        char key_b[5] = {0};
+        sprintf(key_a, "%d", i);
+        sprintf(key_b, "%d", i + 75);
+        set_add(&a, key_a);
+        set_add(&b, key_b);
+    }
+
+    mu_assert_int_eq(SET_TRUE, set_symmetric_difference(&s, &a, &b));
+    mu_assert_int_eq(150, set_length(&s));
+
+    int v = 0;
+    for (int i = 0; i < 75; ++i) {
+        char key_a[5] = {0};
+        char key_b[5] = {0};
+        sprintf(key_a, "%d", i);
+        sprintf(key_b, "%d", i + 150);
+        v += (set_contains(&s, key_a) == SET_TRUE ? 0 : 1);
+        v += (set_contains(&s, key_b) == SET_TRUE ? 0 : 1);
+    }
+    mu_assert_int_eq(0, v);
+
+    set_destroy(&a);
+    set_destroy(&b);
+}
+
+MU_TEST(test_set_symmetric_difference_into_used) {
+    set_add(&s, "test");
+    mu_assert_int_eq(SET_OCCUPIED_ERROR, set_symmetric_difference(&s, &s, &s));
+}
+
 /*******************************************************************************
 *   Testsuite
 *******************************************************************************/
@@ -213,6 +356,16 @@ MU_TEST_SUITE(test_suite) {
 
     /* set subset and superset*/
     MU_RUN_TEST(test_set_subsets_and_supersets);
+
+    /* union, intersection, difference */
+    MU_RUN_TEST(test_set_union);
+    MU_RUN_TEST(test_set_union_into_used);
+    MU_RUN_TEST(test_set_intersection);
+    MU_RUN_TEST(test_set_intersection_into_used);
+    MU_RUN_TEST(test_set_difference);
+    MU_RUN_TEST(test_set_difference_into_used);
+    MU_RUN_TEST(test_set_symmetric_difference);
+    MU_RUN_TEST(test_set_symmetric_difference_into_used);
 }
 
 
