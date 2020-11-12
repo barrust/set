@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include "set.h"
 
-#define INITIAL_NUM_ELEMENTS 1024
 #define MAX_FULLNESS_PERCENT 0.25       /* arbitrary */
 
 /* PRIVATE FUNCTIONS */
@@ -29,10 +28,6 @@ static void __relayout_nodes(SimpleSet *set, uint64_t start, short end_on_null);
 /*******************************************************************************
 ***        FUNCTIONS DEFINITIONS
 *******************************************************************************/
-
-int set_init(SimpleSet *set) {
-    return set_init_alt(set, INITIAL_NUM_ELEMENTS, NULL);
-}
 
 int set_init_alt(SimpleSet *set, uint64_t num_els, set_hash_function hash) {
     set->nodes = (simple_set_node**) malloc(num_els * sizeof(simple_set_node*));
@@ -89,7 +84,7 @@ int set_remove(SimpleSet *set, const char *key) {
     __free_index(set, index);
     // re-layout nodes
     __relayout_nodes(set, index, 0);
-    set->used_nodes--;
+    --set->used_nodes;
     return SET_TRUE;
 }
 
@@ -208,30 +203,22 @@ int set_is_subset_strict(SimpleSet *test, SimpleSet *against) {
     return set_is_subset(test, against);
 }
 
-int set_is_superset(SimpleSet *test, SimpleSet *against) {
-    return set_is_subset(against, test);
-}
-
-int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
-    return set_is_subset_strict(against, test);
-}
-
 int set_cmp(SimpleSet *left, SimpleSet *right) {
     if (left->used_nodes < right->used_nodes) {
-        return -1;
+        return SET_RIGHT_GREATER;
     } else if (right->used_nodes < left->used_nodes) {
-        return 1;
+        return SET_LEFT_GREATER;
     }
     uint64_t i;
     for (i = 0; i < left->number_nodes; ++i) {
         if (left->nodes[i] != NULL) {
             if (set_contains(right, left->nodes[i]->_key) != SET_TRUE) {
-                return 2;
+                return SET_UNEQUAL;
             }
         }
     }
 
-    return 0;
+    return SET_EQUAL;
 }
 
 

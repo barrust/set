@@ -1,10 +1,24 @@
+# project specific
+*.gcno
+*.gcda
+*.gcov
+dist/*
+!dist/.gitkeep
+
+
+# Prerequisites
+*.d
+
 # Object files
 *.o
 *.ko
 *.obj
 *.elf
 
-dist/*
+# Linker output
+*.ilk
+*.map
+*.exp
 
 # Precompiled Headers
 *.gch
@@ -32,3 +46,15 @@ dist/*
 
 # Debug files
 *.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
