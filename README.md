@@ -1,5 +1,11 @@
 # set
-Implementation of sets in **C**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GitHub release](https://img.shields.io/github/v/release/barrust/set.svg)](https://github.com/barrust/set/releases)
+[![Build Status](https://travis-ci.com/barrust/set.svg?branch=master)](https://travis-ci.com/barrust/set)
+[![codecov](https://codecov.io/gh/barrust/set/branch/master/graph/badge.svg)](https://codecov.io/gh/barrust/set)
+
+A simple set implementation in **C**
 
 Sets allow for quick checks for inclusion and exclusion
 
