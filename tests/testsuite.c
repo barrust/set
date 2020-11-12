@@ -260,6 +260,27 @@ MU_TEST(test_set_intersection_into_used) {
     mu_assert_int_eq(SET_OCCUPIED_ERROR, set_intersection(&s, &s, &s));
 }
 
+MU_TEST(test_set_intersection_no_overlap) {
+    SimpleSet a, b;
+    set_init(&a);
+    set_init(&b);
+
+    for (int i = 0; i < 150; ++i) {
+        char key_a[5] = {0};
+        char key_b[5] = {0};
+        sprintf(key_a, "%d", i);
+        sprintf(key_b, "%d", i + 175);
+        set_add(&a, key_a);
+        set_add(&b, key_b);
+    }
+
+    mu_assert_int_eq(SET_TRUE, set_intersection(&s, &a, &b));
+    mu_assert_int_eq(0, set_length(&s));
+
+    set_destroy(&a);
+    set_destroy(&b);
+}
+
 MU_TEST(test_set_difference) {
     SimpleSet a, b;
     set_init(&a);
@@ -292,6 +313,25 @@ MU_TEST(test_set_difference) {
 MU_TEST(test_set_difference_into_used) {
     set_add(&s, "test");
     mu_assert_int_eq(SET_OCCUPIED_ERROR, set_difference(&s, &s, &s));
+}
+
+MU_TEST(test_set_difference_full_overlap) {
+    SimpleSet a, b;
+    set_init(&a);
+    set_init(&b);
+
+    for (int i = 0; i < 150; ++i) {
+        char key[5] = {0};
+        sprintf(key, "%d", i);
+        set_add(&a, key);
+        set_add(&b, key);
+    }
+
+    mu_assert_int_eq(SET_TRUE, set_difference(&s, &a, &b));
+    mu_assert_int_eq(0, set_length(&s));
+
+    set_destroy(&a);
+    set_destroy(&b);
 }
 
 MU_TEST(test_set_symmetric_difference) {
@@ -331,6 +371,25 @@ MU_TEST(test_set_symmetric_difference_into_used) {
     mu_assert_int_eq(SET_OCCUPIED_ERROR, set_symmetric_difference(&s, &s, &s));
 }
 
+MU_TEST(test_set_symmetric_difference_same) {
+    SimpleSet a, b;
+    set_init(&a);
+    set_init(&b);
+
+    for (int i = 0; i < 150; ++i) {
+        char key[5] = {0};
+        sprintf(key, "%d", i);
+        set_add(&a, key);
+        set_add(&b, key);
+    }
+
+    mu_assert_int_eq(SET_TRUE, set_symmetric_difference(&s, &a, &b));
+    mu_assert_int_eq(0, set_length(&s));
+
+    set_destroy(&a);
+    set_destroy(&b);
+}
+
 /*******************************************************************************
 *   Testsuite
 *******************************************************************************/
@@ -362,10 +421,13 @@ MU_TEST_SUITE(test_suite) {
     MU_RUN_TEST(test_set_union_into_used);
     MU_RUN_TEST(test_set_intersection);
     MU_RUN_TEST(test_set_intersection_into_used);
+    MU_RUN_TEST(test_set_intersection_no_overlap);
     MU_RUN_TEST(test_set_difference);
     MU_RUN_TEST(test_set_difference_into_used);
+    MU_RUN_TEST(test_set_difference_full_overlap);
     MU_RUN_TEST(test_set_symmetric_difference);
     MU_RUN_TEST(test_set_symmetric_difference_into_used);
+    MU_RUN_TEST(test_set_symmetric_difference_same);
 }
 
 
