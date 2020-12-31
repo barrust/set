@@ -24,6 +24,9 @@ test: set
 set:
 	$(CC) -c ./$(SRCDIR)/set.c -o ./$(DISTDIR)/set.o $(COMPFLAGS) $(CFLAGS)
 
+runtests:
+	@ if [ -f "./$(DISTDIR)/test" ]; then ./$(DISTDIR)/test; fi
+
 clean:
 	if [ -f "./$(DISTDIR)/set.o" ]; then rm -r ./$(DISTDIR)/set.o; fi
 	if [ -f "./$(DISTDIR)/s" ]; then rm -r ./$(DISTDIR)/s; fi

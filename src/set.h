@@ -1,3 +1,5 @@
+#ifndef BARRUST_SIMPLE_SET_H__
+#define BARRUST_SIMPLE_SET_H__
 /*******************************************************************************
 ***
 ***     Author: Tyler Barrus
@@ -12,8 +14,9 @@
 ***
 *******************************************************************************/
 
-#ifndef BARRUST_SIMPLE_SET_H__
-#define BARRUST_SIMPLE_SET_H__
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <inttypes.h>       /* uint64_t */
 
@@ -197,5 +200,9 @@ int set_cmp(SimpleSet *left, SimpleSet *right);
 #define SET_EQUAL 0
 #define SET_UNEQUAL 2
 
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* END SIMPLE SET HEADER */
