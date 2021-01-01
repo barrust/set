@@ -94,13 +94,13 @@ uint64_t set_length(SimpleSet *set) {
 
 char** set_to_array(SimpleSet *set, uint64_t *size) {
     *size = set->used_nodes;
-    char** results = malloc(set->used_nodes * sizeof(char*));
+    char** results = (char**)calloc(set->used_nodes + 1, sizeof(char*));
     uint64_t i, j = 0;
     size_t len;
     for (i = 0; i < set->number_nodes; ++i) {
         if (set->nodes[i] != NULL) {
             len = strlen(set->nodes[i]->_key);
-            results[j] = calloc(len + 1, sizeof(char));
+            results[j] = (char*)calloc(len + 1, sizeof(char));
             memcpy(results[j], set->nodes[i]->_key, len);
             ++j;
         }
@@ -249,7 +249,7 @@ static int __set_add(SimpleSet *set, const char *key, uint64_t hash) {
     // Expand nodes if we are close to our desired fullness
     if ((float)set->used_nodes / set->number_nodes > MAX_FULLNESS_PERCENT) {
         uint64_t num_els = set->number_nodes * 2; // we want to double each time
-        simple_set_node** tmp = realloc(set->nodes, num_els * sizeof(simple_set_node*));
+        simple_set_node** tmp = (simple_set_node**)realloc(set->nodes, num_els * sizeof(simple_set_node*));
         if (tmp == NULL || set->nodes == NULL) // malloc failure
             return SET_MALLOC_ERROR;
 
@@ -295,8 +295,8 @@ static int __get_index(SimpleSet *set, const char *key, uint64_t hash, uint64_t 
 
 static int __assign_node(SimpleSet *set, const char *key, uint64_t hash, uint64_t index) {
     size_t len = strlen(key);
-    set->nodes[index] = malloc(sizeof(simple_set_node));
-    set->nodes[index]->_key = calloc(len + 1, sizeof(char));
+    set->nodes[index] = (simple_set_node*)malloc(sizeof(simple_set_node));
+    set->nodes[index]->_key = (char*)calloc(len + 1, sizeof(char));
     memcpy(set->nodes[index]->_key, key, len);
     set->nodes[index]->_hash = hash;
     return SET_TRUE;

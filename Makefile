@@ -1,5 +1,5 @@
 CC=gcc
-COMPFLAGS=-Wall -Wpedantic -Winline -Wextra
+COMPFLAGS=-Wall -Wpedantic -Winline -Wextra -Wno-long-long
 SRCDIR=src
 DISTDIR=dist
 TESTDIR=tests
@@ -17,12 +17,15 @@ release: all
 sanitize: COMPFLAGS += -fsanitize=undefined
 sanitize: test
 
-test: COMPFLAGS += -coverage
+test: COMPFLAGS += --coverage
 test: set
 	$(CC) $(DISTDIR)/set.o $(TESTDIR)/testsuite.c $(CCFLAGS) $(COMPFLAGS) -lcrypto -o ./$(DISTDIR)/test -g
 
 set:
 	$(CC) -c ./$(SRCDIR)/set.c -o ./$(DISTDIR)/set.o $(COMPFLAGS) $(CFLAGS)
+
+runtests:
+	@ if [ -f "./$(DISTDIR)/test" ]; then ./$(DISTDIR)/test; fi
 
 clean:
 	if [ -f "./$(DISTDIR)/set.o" ]; then rm -r ./$(DISTDIR)/set.o; fi
