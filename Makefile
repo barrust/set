@@ -17,7 +17,7 @@ release: all
 sanitize: COMPFLAGS += -fsanitize=undefined
 sanitize: test
 
-test: COMPFLAGS += -coverage
+test: COMPFLAGS += --coverage
 test: set
 	$(CC) $(DISTDIR)/set.o $(TESTDIR)/testsuite.c $(CCFLAGS) $(COMPFLAGS) -lcrypto -o ./$(DISTDIR)/test -g
 
