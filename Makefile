@@ -1,5 +1,5 @@
 CC=gcc
-COMPFLAGS=-Wall -Wpedantic -Winline -Wextra
+COMPFLAGS=-Wall -Wpedantic -Winline -Wextra -Wno-long-long
 SRCDIR=src
 DISTDIR=dist
 TESTDIR=tests
