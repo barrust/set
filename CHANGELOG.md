@@ -1,4 +1,6 @@
-##Current Version
+## Current Version
+
+* Updated the FNV-1a seed value
 
 ### Version 0.2.0
 * Add ability to set the initial size of the set

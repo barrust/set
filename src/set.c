@@ -228,7 +228,7 @@ int set_cmp(SimpleSet *left, SimpleSet *right) {
 static uint64_t __default_hash(const char *key) {
     // FNV-1a hash (http://www.isthe.com/chongo/tech/comp/fnv/)
     size_t i, len = strlen(key);
-    uint64_t h = 14695981039346656073ULL; // FNV_OFFSET 64 bit
+    uint64_t h = 14695981039346656037ULL; // FNV_OFFSET 64 bit
     for (i = 0; i < len; ++i) {
         h = h ^ (unsigned char) key[i];
         h = h * 1099511628211ULL; // FNV_PRIME 64 bit
