@@ -44,38 +44,66 @@ MU_TEST(test_alt_setup) {
 *   Test add, contains, remove elements
 *******************************************************************************/
 MU_TEST(test_add_key) {
-    mu_assert_int_eq(SET_TRUE, set_add(&s,"test"));
+    mu_assert_int_eq(SET_TRUE, set_add(&s,"test", 4));
     mu_assert_int_eq(1, set_length(&s));
 }
 
 MU_TEST(test_add_key_twice) {
-    mu_assert_int_eq(SET_TRUE, set_add(&s, "test"));
-    mu_assert_int_eq(SET_ALREADY_PRESENT, set_add(&s, "test"));
+    mu_assert_int_eq(SET_TRUE, set_add(&s, "test", 4));
+    mu_assert_int_eq(SET_ALREADY_PRESENT, set_add(&s, "test", 4));
     mu_assert_int_eq(1, set_length(&s));
 }
 
 MU_TEST(test_remove_key) {
-    mu_assert_int_eq(SET_TRUE, set_add(&s, "test"));
+    mu_assert_int_eq(SET_TRUE, set_add(&s, "test", 4));
     mu_assert_int_eq(1, set_length(&s));
 
-    mu_assert_int_eq(SET_TRUE, set_remove(&s, "test"));
+    mu_assert_int_eq(SET_TRUE, set_remove(&s, "test", 4));
     mu_assert_int_eq(0, set_length(&s));
-    mu_assert_int_eq(SET_FALSE, set_remove(&s, "test"));  // no longer present, return false!
+    mu_assert_int_eq(SET_FALSE, set_remove(&s, "test", 4));  // no longer present, return false!
 }
 
 MU_TEST(test_set_contains) {
-    mu_assert_int_eq(SET_TRUE, set_add(&s, "test"));
+    mu_assert_int_eq(SET_TRUE, set_add(&s, "test", 4));
     mu_assert_int_eq(1, set_length(&s));
 
-    mu_assert_int_eq(SET_TRUE, set_contains(&s, "test"));
-    mu_assert_int_eq(SET_FALSE, set_contains(&s, "blah"));
+    mu_assert_int_eq(SET_TRUE, set_contains(&s, "test", 4));
+    mu_assert_int_eq(SET_FALSE, set_contains(&s, "blah", 4));
+}
+
+MU_TEST(test_add_string_key) {
+    mu_assert_int_eq(SET_TRUE, set_add_str(&s,"test"));
+    mu_assert_int_eq(1, set_length(&s));
+}
+
+MU_TEST(test_add_string_key_twice) {
+    mu_assert_int_eq(SET_TRUE, set_add_str(&s, "test"));
+    mu_assert_int_eq(SET_ALREADY_PRESENT, set_add_str(&s, "test"));
+    mu_assert_int_eq(1, set_length(&s));
+}
+
+MU_TEST(test_remove_string_key) {
+    mu_assert_int_eq(SET_TRUE, set_add_str(&s, "test"));
+    mu_assert_int_eq(1, set_length(&s));
+
+    mu_assert_int_eq(SET_TRUE, set_remove_str(&s, "test"));
+    mu_assert_int_eq(0, set_length(&s));
+    mu_assert_int_eq(SET_FALSE, set_remove_str(&s, "test"));  // no longer present, return false!
+}
+
+MU_TEST(test_set_contains_string) {
+    mu_assert_int_eq(SET_TRUE, set_add_str(&s, "test"));
+    mu_assert_int_eq(1, set_length(&s));
+
+    mu_assert_int_eq(SET_TRUE, set_contains_str(&s, "test"));
+    mu_assert_int_eq(SET_FALSE, set_contains_str(&s, "blah"));
 }
 
 MU_TEST(test_grow_set) {
     for (int i = 0; i < 3000; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i);
-        set_add(&s, key);
+        set_add(&s, key, strlen(key));
     }
     mu_assert_int_eq(3000, set_length(&s));
     mu_assert_int_eq(16384, s.number_nodes);  /* grew 4x */
@@ -89,7 +117,7 @@ MU_TEST(test_set_to_array) {
     for (int i = 0; i < 3000; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i);
-        set_add(&s, key);
+        set_add(&s, key, strlen(key));
     }
 
     uint64_t size;
@@ -124,8 +152,8 @@ MU_TEST(test_set_cmp) {
     for (int i = 0; i < 3000; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i);
-        set_add(&a, key);
-        set_add(&b, key);
+        set_add(&a, key, strlen(key));
+        set_add(&b, key, strlen(key));
     }
 
     // currently the sets should be equal (same number elements and values)
@@ -133,13 +161,13 @@ MU_TEST(test_set_cmp) {
     mu_assert_int_eq(SET_EQUAL, set_cmp(&b, &a));
 
     // make a smaller!
-    set_remove(&a, "0");
+    set_remove(&a, "0", 1);
 
     mu_assert_int_eq(SET_LEFT_GREATER, set_cmp(&b, &a)); // a has more than b
     mu_assert_int_eq(SET_RIGHT_GREATER, set_cmp(&a, &b)); // a has more than b
 
     // make each have same number of elements but have at least 1 thing different
-    set_add(&a, "test");
+    set_add(&a, "test", 4);
     mu_assert_int_eq(SET_UNEQUAL, set_cmp(&a, &b));
 
     set_destroy(&a);
@@ -158,8 +186,8 @@ MU_TEST(test_set_subsets_and_supersets) {
     for (int i = 0; i < 150; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i);
-        set_add(&a, key);
-        set_add(&b, key);
+        set_add(&a, key, strlen(key));
+        set_add(&b, key, strlen(key));
     }
 
     // they currently are the same
@@ -167,7 +195,7 @@ MU_TEST(test_set_subsets_and_supersets) {
     mu_assert_int_eq(SET_FALSE, set_is_superset_strict(&a, &b));
 
     // make one a superset
-    set_add(&a, "test");
+    set_add(&a, "test", 4);
 
     // subset
     mu_assert_int_eq(SET_TRUE, set_is_subset(&b, &a));
@@ -202,8 +230,8 @@ MU_TEST(test_set_union) {
         char key_b[5] = {0};
         sprintf(key_a, "%d", i);
         sprintf(key_b, "%d", i + 75);
-        set_add(&a, key_a);
-        set_add(&b, key_b);
+        set_add(&a, key_a, strlen(key_a));
+        set_add(&b, key_b, strlen(key_b));
     }
 
     mu_assert_int_eq(SET_TRUE, set_union(&s, &a, &b));
@@ -213,7 +241,7 @@ MU_TEST(test_set_union) {
     for (int i = 0; i < 225; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i);
-        v += (set_contains(&s, key) == SET_TRUE ? 0 : 1);
+        v += (set_contains(&s, key, strlen(key)) == SET_TRUE ? 0 : 1);
     }
     mu_assert_int_eq(0, v);
 
@@ -222,7 +250,7 @@ MU_TEST(test_set_union) {
 }
 
 MU_TEST(test_set_union_into_used) {
-    set_add(&s, "test");
+    set_add(&s, "test", strlen("test"));
     mu_assert_int_eq(SET_OCCUPIED_ERROR, set_union(&s, &s, &s));
 }
 
@@ -236,8 +264,8 @@ MU_TEST(test_set_intersection) {
         char key_b[5] = {0};
         sprintf(key_a, "%d", i);
         sprintf(key_b, "%d", i + 75);
-        set_add(&a, key_a);
-        set_add(&b, key_b);
+        set_add(&a, key_a, strlen(key_a));
+        set_add(&b, key_b, strlen(key_b));
     }
 
     mu_assert_int_eq(SET_TRUE, set_intersection(&s, &a, &b));
@@ -247,7 +275,7 @@ MU_TEST(test_set_intersection) {
     for (int i = 0; i < 75; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i + 75);
-        v += (set_contains(&s, key) == SET_TRUE ? 0 : 1);
+        v += (set_contains(&s, key, strlen(key)) == SET_TRUE ? 0 : 1);
     }
     mu_assert_int_eq(0, v);
 
@@ -256,7 +284,7 @@ MU_TEST(test_set_intersection) {
 }
 
 MU_TEST(test_set_intersection_into_used) {
-    set_add(&s, "test");
+    set_add(&s, "test", strlen("test"));
     mu_assert_int_eq(SET_OCCUPIED_ERROR, set_intersection(&s, &s, &s));
 }
 
@@ -270,8 +298,8 @@ MU_TEST(test_set_intersection_no_overlap) {
         char key_b[5] = {0};
         sprintf(key_a, "%d", i);
         sprintf(key_b, "%d", i + 175);
-        set_add(&a, key_a);
-        set_add(&b, key_b);
+        set_add(&a, key_a, strlen(key_a));
+        set_add(&b, key_b, strlen(key_b));
     }
 
     mu_assert_int_eq(SET_TRUE, set_intersection(&s, &a, &b));
@@ -291,8 +319,8 @@ MU_TEST(test_set_difference) {
         char key_b[5] = {0};
         sprintf(key_a, "%d", i);
         sprintf(key_b, "%d", i + 75);
-        set_add(&a, key_a);
-        set_add(&b, key_b);
+        set_add(&a, key_a, strlen(key_a));
+        set_add(&b, key_b, strlen(key_b));
     }
 
     mu_assert_int_eq(SET_TRUE, set_difference(&s, &a, &b));
@@ -302,7 +330,7 @@ MU_TEST(test_set_difference) {
     for (int i = 0; i < 75; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i);
-        v += (set_contains(&s, key) == SET_TRUE ? 0 : 1);
+        v += (set_contains(&s, key, strlen(key)) == SET_TRUE ? 0 : 1);
     }
     mu_assert_int_eq(0, v);
 
@@ -311,7 +339,7 @@ MU_TEST(test_set_difference) {
 }
 
 MU_TEST(test_set_difference_into_used) {
-    set_add(&s, "test");
+    set_add(&s, "test", strlen("test"));
     mu_assert_int_eq(SET_OCCUPIED_ERROR, set_difference(&s, &s, &s));
 }
 
@@ -323,8 +351,8 @@ MU_TEST(test_set_difference_full_overlap) {
     for (int i = 0; i < 150; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i);
-        set_add(&a, key);
-        set_add(&b, key);
+        set_add(&a, key, strlen(key));
+        set_add(&b, key, strlen(key));
     }
 
     mu_assert_int_eq(SET_TRUE, set_difference(&s, &a, &b));
@@ -344,8 +372,8 @@ MU_TEST(test_set_symmetric_difference) {
         char key_b[5] = {0};
         sprintf(key_a, "%d", i);
         sprintf(key_b, "%d", i + 75);
-        set_add(&a, key_a);
-        set_add(&b, key_b);
+        set_add(&a, key_a, strlen(key_a));
+        set_add(&b, key_b, strlen(key_b));
     }
 
     mu_assert_int_eq(SET_TRUE, set_symmetric_difference(&s, &a, &b));
@@ -357,8 +385,8 @@ MU_TEST(test_set_symmetric_difference) {
         char key_b[5] = {0};
         sprintf(key_a, "%d", i);
         sprintf(key_b, "%d", i + 150);
-        v += (set_contains(&s, key_a) == SET_TRUE ? 0 : 1);
-        v += (set_contains(&s, key_b) == SET_TRUE ? 0 : 1);
+        v += (set_contains(&s, key_a, strlen(key_a)) == SET_TRUE ? 0 : 1);
+        v += (set_contains(&s, key_b, strlen(key_b)) == SET_TRUE ? 0 : 1);
     }
     mu_assert_int_eq(0, v);
 
@@ -367,7 +395,7 @@ MU_TEST(test_set_symmetric_difference) {
 }
 
 MU_TEST(test_set_symmetric_difference_into_used) {
-    set_add(&s, "test");
+    set_add(&s, "test", strlen("test"));
     mu_assert_int_eq(SET_OCCUPIED_ERROR, set_symmetric_difference(&s, &s, &s));
 }
 
@@ -379,8 +407,8 @@ MU_TEST(test_set_symmetric_difference_same) {
     for (int i = 0; i < 150; ++i) {
         char key[5] = {0};
         sprintf(key, "%d", i);
-        set_add(&a, key);
-        set_add(&b, key);
+        set_add(&a, key, strlen(key));
+        set_add(&b, key, strlen(key));
     }
 
     mu_assert_int_eq(SET_TRUE, set_symmetric_difference(&s, &a, &b));
@@ -406,6 +434,11 @@ MU_TEST_SUITE(test_suite) {
     MU_RUN_TEST(test_remove_key);
     MU_RUN_TEST(test_set_contains);
     MU_RUN_TEST(test_grow_set);
+
+    MU_RUN_TEST(test_add_string_key);
+    MU_RUN_TEST(test_add_string_key_twice);
+    MU_RUN_TEST(test_remove_string_key);
+    MU_RUN_TEST(test_set_contains_string);
 
     /* set to array */
     MU_RUN_TEST(test_set_to_array);

@@ -9,7 +9,7 @@ A simple set implementation in **C**
 
 Sets allow for quick checks for inclusion and exclusion
 
-This implementation provides a simple and generally quick method to get set functionality into a C program quickly. It was developed to provide a basis for testing and benchmarking performance along with providing a purposeful, low overhead library. Currently only supports strings.
+This implementation provides a simple and generally quick method to get set functionality into a C program quickly. It was developed to provide a basis for testing and benchmarking performance along with providing a purposeful, low overhead library. There are two groups of functions for handling individual members. For strings, there is `set_add_str`, `set_contains_str` and `set_remove_str`. For arbitrary data, there is `set_add`, `set_contains` and `set_remove`. The string functions expect a NUL-terminated string while the other functions accept a key and a length — `set_add_str(&set, "black")` and `set_add(&set, "black", 5)` perform the same operation.
 
 To use the library, copy the `src/set.h` and `src/set.c` files into your project and include it where needed.
 
@@ -31,25 +31,30 @@ MIT 2016
 
 ## Usage:
 ``` c
+// Defining key size type is optional but can be used to optimize memory usage.
+#define SET_KEY_SIZE_TYPE uint16_t
 #include "set.h"
+
 #include <stdio.h>
 
 int main(int argc, char** argv) {
     SimpleSet set;
     set_init(&set);
-    set_add(&set, "orange");
-    set_add(&set, "blue");
-    set_add(&set, "red");
-    set_add(&set, "green");
-    set_add(&set, "yellow");
+    set_add_str(&set, "orange");
+    set_add_str(&set, "blue");
+    set_add_str(&set, "red");
+    set_add_str(&set, "green");
+    set_add_str(&set, "yellow");
 
-    if (set_contains(&set, "yellow") == SET_TRUE) {
+    // Or `set_add(&set, "yellow", strlen("yellow"));`
+
+    if (set_contains_str(&set, "yellow") == SET_TRUE) {
         printf("Set contains 'yellow'!\n");
     } else {
         printf("Set does not contains 'yellow'!\n");
     }
 
-    if (set_contains(&set, "purple") == SET_TRUE) {
+    if (set_contains_str(&set, "purple") == SET_TRUE) {
         printf("Set contains 'purple'!\n");
     } else {
         printf("Set does not contains 'purple'!\n");
@@ -79,7 +84,7 @@ int main(int argc, char** argv) {
         sprintf(key, "%d", i);
         #pragma omp critical (set_lock)
         {
-            set_add(&set, key);
+            set_add_str(&set, key);
         }
     }
     set_destroy(&set);
