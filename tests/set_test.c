@@ -23,7 +23,7 @@ void success_or_failure(int res) {
 }
 
 void check_string(SimpleSet *set, char *key) {
-    if (set_contains(set, key) == SET_TRUE) {
+    if (set_contains(set, key, strlen(key)) == SET_TRUE) {
         printf("Set contains [%s]!\n", key);
     } else {
         printf("Set does not contains [%s]!\n", key);
@@ -35,7 +35,7 @@ void initialize_set(SimpleSet *set, int start, int elements, int itter, int TEST
     for (i = start; i < elements; i+=itter) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%d", i);
-        int res = set_add(set, key);
+        int res = set_add(set, key, strlen(key));
         if (res != TEST) {
             printf("Error: %s\tres: %d\n", key, res);
         }
@@ -100,7 +100,7 @@ int main() {
     for (i = 0; i < elements; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&A, key) != SET_TRUE) {
+        if (set_contains(&A, key, strlen(key)) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -113,7 +113,7 @@ int main() {
     for (i = elements; i < elements * 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i * -1);
-        if (set_contains(&A, key) == SET_TRUE) {
+        if (set_contains(&A, key, strlen(key)) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -127,7 +127,7 @@ int main() {
     for (i = elements / 2; i < elements; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_remove(&A, key) != SET_TRUE) {
+        if (set_remove(&A, key, strlen(key)) != SET_TRUE) {
             ++inaccuraces;
         }
     }
@@ -139,12 +139,12 @@ int main() {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
         if (i >= elements / 2) {
-            if (set_contains(&A, key) == SET_TRUE) {
+            if (set_contains(&A, key, strlen(key)) == SET_TRUE) {
                 printf("Additional Key: [%s]\n", key);
                 ++inaccuraces;
             }
         } else {
-            if (set_contains(&A, key) != SET_TRUE) {
+            if (set_contains(&A, key, strlen(key)) != SET_TRUE) {
                 printf("Missing Key: [%s]\n", key);
                 ++inaccuraces;
             }
@@ -332,7 +332,7 @@ int main() {
     for (i = 0; i < elements / 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) != SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -340,7 +340,7 @@ int main() {
     for (i = elements; i < elements * 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) != SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -352,7 +352,7 @@ int main() {
     for (i = elements / 2 + 1; i < elements;  ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) == SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -372,7 +372,7 @@ int main() {
     for (i = elements; i < elements * 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) != SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             ++inaccuraces;
         }

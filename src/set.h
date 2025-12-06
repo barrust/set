@@ -26,9 +26,16 @@ extern "C" {
 #define __inline__ inline
 #endif
 
-typedef uint64_t (*set_hash_function) (const char *key);
+// Let the user specify a custom size type so the struct size can be minimized.
+#ifndef SET_KEY_SIZE_TYPE
+#define SET_KEY_SIZE_TYPE size_t
+#endif
+
+typedef SET_KEY_SIZE_TYPE key_size_tt;
+typedef uint64_t (*set_hash_function) (const char *key, key_size_tt len);
 
 typedef struct  {
+    key_size_tt _len;
     char* _key;
     uint64_t _hash;
 } SimpleSetNode, simple_set_node;
@@ -69,7 +76,18 @@ int set_destroy(SimpleSet *set);
         SET_MALLOC_ERROR if unable to grow the set
     NOTE: SET_CIRCULAR_ERROR should never happen, but is there for insurance!
 */
-int set_add(SimpleSet *set, const char *key);
+int set_add(SimpleSet *set, const char *key, key_size_tt len);
+
+/*  Add string element to set
+
+    Returns:
+        SET_TRUE if added
+        SET_ALREADY_PRESENT if already present
+        SET_CIRCULAR_ERROR if set is completely full
+        SET_MALLOC_ERROR if unable to grow the set
+    NOTE: SET_CIRCULAR_ERROR should never happen, but is there for insurance!
+*/
+int set_add_str(SimpleSet *set, const char *key);
 
 /*  Remove element from the set
 
@@ -77,7 +95,15 @@ int set_add(SimpleSet *set, const char *key);
         SET_TRUE if removed
         SET_FALSE if not present
 */
-int set_remove(SimpleSet *set, const char *key);
+int set_remove(SimpleSet *set, const char *key, key_size_tt len);
+
+/*  Remove string element from the set
+
+    Returns:
+        SET_TRUE if removed
+        SET_FALSE if not present
+*/
+int set_remove_str(SimpleSet *set, const char *key);
 
 /*  Check if key in set
 
@@ -87,7 +113,17 @@ int set_remove(SimpleSet *set, const char *key);
         SET_CIRCULAR_ERROR if set is full and not found
     NOTE: SET_CIRCULAR_ERROR should never happen, but is there for insurance!
 */
-int set_contains(const SimpleSet *set, const char *key);
+int set_contains(const SimpleSet *set, const char *key, key_size_tt len);
+
+/*  Check if string key in set
+
+    Returns:
+        SET_TRUE if present,
+        SET_FALSE if not found
+        SET_CIRCULAR_ERROR if set is full and not found
+    NOTE: SET_CIRCULAR_ERROR should never happen, but is there for insurance!
+*/
+int set_contains_str(const SimpleSet *set, const char *key);
 
 /* Return the number of elements in the set */
 uint64_t set_length(const SimpleSet *set);
