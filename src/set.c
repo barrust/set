@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "set.h"
 
-#define MAX_FULLNESS_PERCENT 0.25       /* arbitrary */
+#define MAX_FULLNESS_RATIO 0.25       /* arbitrary */
 
 /* PRIVATE FUNCTIONS */
 static uint64_t __default_hash(const char *key, key_size_tt len);
