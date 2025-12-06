@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 #define KEY_LEN 25
@@ -257,7 +258,7 @@ int main() {
     for (i = 0; i < elements / 2;  ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) == SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -265,7 +266,7 @@ int main() {
     for (i = elements + 1; i < elements * 2;  ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) == SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -277,7 +278,7 @@ int main() {
     for (i = elements / 2; i < elements; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) != SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -298,7 +299,7 @@ int main() {
     for (i = 0; i < elements / 2; ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) != SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) != SET_TRUE) {
             printf("Missing Key: [%s]\n", key);
             ++inaccuraces;
         }
@@ -310,7 +311,7 @@ int main() {
     for (i = elements + 1; i < elements * 2;  ++i) {
         char key[KEY_LEN] = {0};
         sprintf(key, "%" PRIu64, i);
-        if (set_contains(&C, key) == SET_TRUE) {
+        if (set_contains(&C, key, strlen(key)) == SET_TRUE) {
             printf("Non-present key: [%s]\n", key);
             ++inaccuraces;
         }
