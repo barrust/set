@@ -258,7 +258,7 @@ static int __set_add(SimpleSet *set, const char *key, key_size_tt len, uint64_t 
         return SET_ALREADY_PRESENT;
 
     // Expand nodes if we are close to our desired fullness
-    if ((float)set->used_nodes / set->number_nodes > MAX_FULLNESS_PERCENT) {
+    if ((float)set->used_nodes / set->number_nodes > MAX_FULLNESS_RATIO) {
         uint64_t num_els = set->number_nodes * 2; // we want to double each time
         simple_set_node** tmp = (simple_set_node**)realloc(set->nodes, num_els * sizeof(simple_set_node*));
         if (tmp == NULL || set->nodes == NULL) // malloc failure
