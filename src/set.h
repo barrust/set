@@ -87,10 +87,10 @@ int set_remove(SimpleSet *set, const char *key);
         SET_CIRCULAR_ERROR if set is full and not found
     NOTE: SET_CIRCULAR_ERROR should never happen, but is there for insurance!
 */
-int set_contains(SimpleSet *set, const char *key);
+int set_contains(const SimpleSet *set, const char *key);
 
 /* Return the number of elements in the set */
-uint64_t set_length(SimpleSet *set);
+uint64_t set_length(const SimpleSet *set);
 
 /*  Set res to the union of s1 and s2
     res = s1 ∪ s2
@@ -98,7 +98,7 @@ uint64_t set_length(SimpleSet *set);
     The union of a set A with a B is the set of elements that are in either
     set A or B. The union is denoted as A ∪ B
 */
-int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
+int set_union(SimpleSet *res, const SimpleSet *s1, const SimpleSet *s2);
 
 /*  Set res to the intersection of s1 and s2
     res = s1 ∩ s2
@@ -106,7 +106,7 @@ int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
     The intersection of a set A with a B is the set of elements that are in
     both set A and B. The intersection is denoted as A ∩ B
 */
-int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
+int set_intersection(SimpleSet *res, const SimpleSet *s1, const SimpleSet *s2);
 
 /*  Set res to the difference between s1 and s2
     res = s1∖ s2
@@ -116,7 +116,7 @@ int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
     of B: x ∈ A ∖ B ⟺ x ∈ A ∧ x ∉ B. Another frequently seen notation
     for S ∖ T is S − T.
 */
-int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
+int set_difference(SimpleSet *res, const SimpleSet *s1, const SimpleSet *s2);
 
 /*  Set res to the symmetric difference between s1 and s2
     res = s1 △ s2
@@ -125,7 +125,7 @@ int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
     in A or in B but not in both. Symmetric difference is denoted
     A △ B or A * B
 */
-int set_symmetric_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
+int set_symmetric_difference(SimpleSet *res, const SimpleSet *s1, const SimpleSet *s2);
 
 /*  Return SET_TRUE if test is fully contained in s2; returns SET_FALSE
     otherwise
@@ -135,7 +135,7 @@ int set_symmetric_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2);
     elements of the set B. In other words, the set A is contained inside
     the set B. The subset relationship is denoted as A ⊆ B
 */
-int set_is_subset(SimpleSet *test, SimpleSet *against);
+int set_is_subset(const SimpleSet *test, const SimpleSet *against);
 
 /*  Inverse of subset; return SET_TRUE if set test fully contains
     (including equal to) set against; return SET_FALSE otherwise
@@ -145,7 +145,7 @@ int set_is_subset(SimpleSet *test, SimpleSet *against);
     elements of the set B are elements of the set A. The superset
     relationship is denoted as A ⊇ B
 */
-static __inline__ int set_is_superset(SimpleSet *test, SimpleSet *against) {
+static __inline__ int set_is_superset(const SimpleSet *test, const SimpleSet *against) {
     return set_is_subset(against, test);
 }
 
@@ -158,7 +158,7 @@ static __inline__ int set_is_superset(SimpleSet *test, SimpleSet *against) {
     the set B. A ≠ B is required. The strict subset relationship is denoted
     as A ⊂ B
 */
-int set_is_subset_strict(SimpleSet *test, SimpleSet *against);
+int set_is_subset_strict(const SimpleSet *test, const SimpleSet *against);
 
 /*  Strict superset ensures that the test is a superset of against, but that
     the two are also not equal.
@@ -168,13 +168,13 @@ int set_is_subset_strict(SimpleSet *test, SimpleSet *against);
     all elements of the set B are elements of the set A. A ≠ B is required.
     The superset relationship is denoted as A ⊃ B
 */
-static __inline__ int set_is_superset_strict(SimpleSet *test, SimpleSet *against) {
+static __inline__ int set_is_superset_strict(const SimpleSet *test, const SimpleSet *against) {
     return set_is_subset_strict(against, test);
 }
 
 /*  Return an array of the elements in the set
     NOTE: Up to the caller to free the memory */
-char** set_to_array(SimpleSet *set, uint64_t *size);
+char** set_to_array(const SimpleSet *set, uint64_t *size);
 
 /*  Compare two sets for equality (size, keys same, etc)
 
@@ -184,7 +184,7 @@ char** set_to_array(SimpleSet *set, uint64_t *size);
         SET_EQUAL if left is the same size as right and keys match
         SET_UNEQUAL if size is the same but elements are different
 */
-int set_cmp(SimpleSet *left, SimpleSet *right);
+int set_cmp(const SimpleSet *left, const SimpleSet *right);
 
 // void set_printf(SimpleSet *set);                                           /* TODO: implement */
 

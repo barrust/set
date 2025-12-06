@@ -18,10 +18,10 @@
 
 /* PRIVATE FUNCTIONS */
 static uint64_t __default_hash(const char *key);
-static int __get_index(SimpleSet *set, const char *key, uint64_t hash, uint64_t *index);
+static int __get_index(const SimpleSet *set, const char *key, uint64_t hash, uint64_t *index);
 static int __assign_node(SimpleSet *set, const char *key, uint64_t hash, uint64_t index);
 static void __free_index(SimpleSet *set, uint64_t index);
-static int __set_contains(SimpleSet *set, const char *key, uint64_t hash);
+static int __set_contains(const SimpleSet *set, const char *key, uint64_t hash);
 static int __set_add(SimpleSet *set, const char *key, uint64_t hash);
 static void __relayout_nodes(SimpleSet *set, uint64_t start, short end_on_null);
 
@@ -69,7 +69,7 @@ int set_add(SimpleSet *set, const char *key) {
     return __set_add(set, key, hash);
 }
 
-int set_contains(SimpleSet *set, const char *key) {
+int set_contains(const SimpleSet *set, const char *key) {
     uint64_t index, hash = set->hash_function(key);
     return __get_index(set, key, hash, &index);
 }
@@ -88,11 +88,11 @@ int set_remove(SimpleSet *set, const char *key) {
     return SET_TRUE;
 }
 
-uint64_t set_length(SimpleSet *set) {
+uint64_t set_length(const SimpleSet *set) {
     return set->used_nodes;
 }
 
-char** set_to_array(SimpleSet *set, uint64_t *size) {
+char** set_to_array(const SimpleSet *set, uint64_t *size) {
     *size = set->used_nodes;
     char** results = (char**)calloc(set->used_nodes + 1, sizeof(char*));
     uint64_t i, j = 0;
@@ -108,7 +108,7 @@ char** set_to_array(SimpleSet *set, uint64_t *size) {
     return results;
 }
 
-int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
+int set_union(SimpleSet *res, const SimpleSet *s1, const SimpleSet *s2) {
     if (res->used_nodes != 0) {
         return SET_OCCUPIED_ERROR;
     }
@@ -127,7 +127,7 @@ int set_union(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     return SET_TRUE;
 }
 
-int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
+int set_intersection(SimpleSet *res, const SimpleSet *s1, const SimpleSet *s2) {
     if (res->used_nodes != 0) {
         return SET_OCCUPIED_ERROR;
     }
@@ -144,7 +144,7 @@ int set_intersection(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
 }
 
 /* difference is s1 - s2 */
-int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
+int set_difference(SimpleSet *res, const SimpleSet *s1, const SimpleSet *s2) {
     if (res->used_nodes != 0) {
         return SET_OCCUPIED_ERROR;
     }
@@ -160,7 +160,7 @@ int set_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     return SET_TRUE;
 }
 
-int set_symmetric_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
+int set_symmetric_difference(SimpleSet *res, const SimpleSet *s1, const SimpleSet *s2) {
     if (res->used_nodes != 0) {
         return SET_OCCUPIED_ERROR;
     }
@@ -184,7 +184,7 @@ int set_symmetric_difference(SimpleSet *res, SimpleSet *s1, SimpleSet *s2) {
     return SET_TRUE;
 }
 
-int set_is_subset(SimpleSet *test, SimpleSet *against) {
+int set_is_subset(const SimpleSet *test, const SimpleSet *against) {
     uint64_t i;
     for (i = 0; i < test->number_nodes; ++i) {
         if (test->nodes[i] != NULL) {
@@ -196,14 +196,14 @@ int set_is_subset(SimpleSet *test, SimpleSet *against) {
     return SET_TRUE;
 }
 
-int set_is_subset_strict(SimpleSet *test, SimpleSet *against) {
+int set_is_subset_strict(const SimpleSet *test, const SimpleSet *against) {
     if (test->used_nodes >= against->used_nodes) {
         return SET_FALSE;
     }
     return set_is_subset(test, against);
 }
 
-int set_cmp(SimpleSet *left, SimpleSet *right) {
+int set_cmp(const SimpleSet *left, const SimpleSet *right) {
     if (left->used_nodes < right->used_nodes) {
         return SET_RIGHT_GREATER;
     } else if (right->used_nodes < left->used_nodes) {
@@ -236,7 +236,7 @@ static uint64_t __default_hash(const char *key) {
     return h;
 }
 
-static int __set_contains(SimpleSet *set, const char *key, uint64_t hash) {
+static int __set_contains(const SimpleSet *set, const char *key, uint64_t hash) {
     uint64_t index;
     return __get_index(set, key, hash, &index);
 }
@@ -272,7 +272,7 @@ static int __set_add(SimpleSet *set, const char *key, uint64_t hash) {
     return res;
 }
 
-static int __get_index(SimpleSet *set, const char *key, uint64_t hash, uint64_t *index) {
+static int __get_index(const SimpleSet *set, const char *key, uint64_t hash, uint64_t *index) {
     uint64_t i, idx;
     idx = hash % set->number_nodes;
     i = idx;
