@@ -62,10 +62,10 @@ static __inline__ int set_init(SimpleSet *set) {
 }
 
 /* Utility function to clear out the set */
-int set_clear(SimpleSet *set);
+void set_clear(SimpleSet *set);
 
 /* Free all memory that is part of the set */
-int set_destroy(SimpleSet *set);
+void set_destroy(SimpleSet *set);
 
 /*  Add element to set
 
@@ -241,4 +241,5 @@ int set_cmp(const SimpleSet *left, const SimpleSet *right);
 } // extern "C"
 #endif
 
-#endif /* END SIMPLE SET HEADER */
+/* END SIMPLE SET HEADER */
+#endif

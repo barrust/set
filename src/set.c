@@ -19,7 +19,7 @@
 /* PRIVATE FUNCTIONS */
 static uint64_t __default_hash(const char *key, key_size_tt len);
 static int __get_index(const SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t *index);
-static int __assign_node(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t index);
+static void __assign_node(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t index);
 static void __free_index(SimpleSet *set, uint64_t index);
 static int __set_contains(const SimpleSet *set, const char *key, key_size_tt len, uint64_t hash);
 static int __set_add(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash);
@@ -44,7 +44,7 @@ int set_init_alt(SimpleSet *set, uint64_t num_els, set_hash_function hash) {
     return SET_TRUE;
 }
 
-int set_clear(SimpleSet *set) {
+void set_clear(SimpleSet *set) {
     uint64_t i;
     for(i = 0; i < set->number_nodes; ++i) {
         if (set->nodes[i] != NULL) {
@@ -52,16 +52,14 @@ int set_clear(SimpleSet *set) {
         }
     }
     set->used_nodes = 0;
-    return SET_TRUE;
 }
 
-int set_destroy(SimpleSet *set) {
+void set_destroy(SimpleSet *set) {
     set_clear(set);
     free(set->nodes);
     set->number_nodes = 0;
     set->used_nodes = 0;
     set->hash_function = NULL;
-    return SET_TRUE;
 }
 
 int set_add(SimpleSet *set, const char *key, key_size_tt len) {
@@ -303,13 +301,12 @@ static int __get_index(const SimpleSet *set, const char *key, key_size_tt len, u
     }
 }
 
-static int __assign_node(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t index) {
+static void __assign_node(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t index) {
     set->nodes[index] = (simple_set_node*)malloc(sizeof(simple_set_node));
     set->nodes[index]->_key = (char*)calloc(len + 1, sizeof(char));
     set->nodes[index]->_len = len;
     memcpy(set->nodes[index]->_key, key, len);
     set->nodes[index]->_hash = hash;
-    return SET_TRUE;
 }
 
 static void __free_index(SimpleSet *set, uint64_t index) {
