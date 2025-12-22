@@ -19,19 +19,19 @@
 // We always want to check for errors when dealing with private functions, so
 // generate warnings if we don't on GCC-compatible compilers.
 #ifdef __GNUC__
-#define attribute_warn_unused_result __attribute__((warn_unused_result))
+#define warn_unused_result __attribute__((warn_unused_result))
 #else
-#define attribute_warn_unused_result
+#define warn_unused_result
 #endif
 
 /* PRIVATE FUNCTIONS */
-static attribute_warn_unused_result uint64_t __default_hash(const char *key, key_size_tt len);
-static attribute_warn_unused_result int __get_index(const SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t *index);
-static attribute_warn_unused_result int __assign_node(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t index);
+static warn_unused_result uint64_t __default_hash(const char *key, key_size_tt len);
+static warn_unused_result int __get_index(const SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t *index);
+static warn_unused_result int __assign_node(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash, uint64_t index);
 static void __free_index(SimpleSet *set, uint64_t index);
-static attribute_warn_unused_result int __set_contains(const SimpleSet *set, const char *key, key_size_tt len, uint64_t hash);
-static attribute_warn_unused_result int __set_add(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash);
-static attribute_warn_unused_result int __relayout_nodes(SimpleSet *set, uint64_t start, short end_on_null);
+static warn_unused_result int __set_contains(const SimpleSet *set, const char *key, key_size_tt len, uint64_t hash);
+static warn_unused_result int __set_add(SimpleSet *set, const char *key, key_size_tt len, uint64_t hash);
+static warn_unused_result int __relayout_nodes(SimpleSet *set, uint64_t start, short end_on_null);
 
 /*******************************************************************************
 ***        FUNCTIONS DEFINITIONS
