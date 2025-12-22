@@ -208,7 +208,8 @@ static __inline__ int set_is_superset_strict(const SimpleSet *test, const Simple
     return set_is_subset_strict(against, test);
 }
 
-/*  Return an array of the elements in the set
+/*  Return an array of the elements in the set. If a memory allocation error
+    occurs, NULL is returned and the value size points to is unchanged.
     NOTE: Up to the caller to free the memory */
 char** set_to_array(const SimpleSet *set, uint64_t *size);
 
@@ -224,17 +225,22 @@ int set_cmp(const SimpleSet *left, const SimpleSet *right);
 
 // void set_printf(SimpleSet *set);                                           /* TODO: implement */
 
-#define SET_TRUE 0
-#define SET_FALSE -1
-#define SET_MALLOC_ERROR -2
-#define SET_CIRCULAR_ERROR -3
-#define SET_OCCUPIED_ERROR -4
-#define SET_ALREADY_PRESENT 1
+typedef enum {
+    SET_TRUE = 1,
+    SET_FALSE = 2,
+    SET_ALREADY_PRESENT = 3,
 
-#define SET_RIGHT_GREATER 3
-#define SET_LEFT_GREATER 1
-#define SET_EQUAL 0
-#define SET_UNEQUAL 2
+    // Comparator results
+    SET_RIGHT_GREATER = 4,
+    SET_LEFT_GREATER = 5,
+    SET_EQUAL = 6,
+    SET_UNEQUAL = 7,
+
+    // Errors are always negative
+    SET_MALLOC_ERROR = -1,
+    SET_CIRCULAR_ERROR = -2,
+    SET_OCCUPIED_ERROR = -3,
+} set_result;
 
 
 #ifdef __cplusplus
